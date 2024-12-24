@@ -39,13 +39,24 @@ export function GalleryProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const addToGallery = (image: string, plantInfo: PlantInfo) => {
+    // Check if plant already exists in gallery
+    const isDuplicate = gallery.some(item => 
+      item.plantInfo.name === plantInfo.name && 
+      item.plantInfo.scientificName === plantInfo.scientificName
+    )
+
+    // If it's a duplicate, don't add it
+    if (isDuplicate) {
+      return
+    }
+
     const newGallery = [...gallery, {
       image,
       plantInfo,
       timestamp: new Date()
     }]
     setGallery(newGallery)
-    // Save to localStorage
+    
     try {
       localStorage.setItem('plantGallery', JSON.stringify(newGallery))
     } catch (error) {

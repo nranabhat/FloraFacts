@@ -6,6 +6,7 @@ import PhotoHandler from './PhotoHandler'
 import PlantInfoCard from './PlantInfoCard'
 import { PlantInfo } from '../types/PlantInfo'
 import Image from 'next/image'
+import { useGallery } from '../context/GalleryContext'
 
 export default function PlantIdentifier() {
   const [image, setImage] = useState<string | null>(null)
@@ -16,6 +17,8 @@ export default function PlantIdentifier() {
   const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '')
 
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  const { addToGallery } = useGallery()
 
   const handleImageCapture = async (imageData: string) => {
     setImage(imageData)
@@ -79,6 +82,7 @@ export default function PlantIdentifier() {
       const parsedInfo = parseJsonResponse(responseText)
       
       setPlantInfo(parsedInfo)
+      addToGallery(base64Image, parsedInfo)
     } catch (err) {
       console.error('Plant Identification Error:', err)
       
