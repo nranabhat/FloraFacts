@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState} from 'react'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import PhotoHandler from './PhotoHandler'
 import PlantInfoCard from './PlantInfoCard'
@@ -15,8 +15,6 @@ export default function PlantIdentifier() {
   const [error, setError] = useState<string | null>(null)
 
   const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '')
-
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   const { addToGallery } = useGallery()
 
@@ -131,32 +129,6 @@ export default function PlantIdentifier() {
       };
     }
   }
-
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: {
-          facingMode: 'environment', // Use back camera if available
-          width: { ideal: 1920 },
-          height: { ideal: 1080 }
-        } 
-      });
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        // Important: Wait for video to be ready
-        await new Promise((resolve) => {
-          if (videoRef.current) {
-            videoRef.current.onloadedmetadata = () => {
-              resolve(true);
-            };
-          }
-        });
-      }
-    } catch (err) {
-      console.error('Error accessing camera:', err);
-    }
-  };
 
   return (
     <div className="relative w-full max-w-md">

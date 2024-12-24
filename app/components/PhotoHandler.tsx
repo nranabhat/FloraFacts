@@ -74,7 +74,7 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
         })
       }
       setShowCamera(true)
-    } catch (_) {
+    } catch {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ 
           video: { 
