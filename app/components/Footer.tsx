@@ -1,9 +1,11 @@
 'use client'
 
+import Link from 'next/link'
+
 const Footer = () => {
   const handleCoffeeClick = () => {
     // Replace with your actual Buy Me a Coffee link
-    window.open('https://www.buymeacoffee.com/yourname', '_blank')
+    window.open('https://www.buymeacoffee.com/nranabhat', '_blank')
   }
 
   return (
@@ -23,7 +25,7 @@ const Footer = () => {
           <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
           <ul className="text-green-200 text-sm space-y-2">
             <li>
-              <a href="https://github.com/yourusername" 
+              <a href="https://github.com/nranabhat/FloraFacts" 
                 className="hover:text-white transition-colors duration-200"
                 target="_blank" 
                 rel="noopener noreferrer"
@@ -32,18 +34,20 @@ const Footer = () => {
               </a>
             </li>
             <li>
-              <a href="#" 
+              <Link 
+                href="/privacy"
                 className="hover:text-white transition-colors duration-200"
               >
                 Privacy Policy
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" 
+              <Link 
+                href="/terms"
                 className="hover:text-white transition-colors duration-200"
               >
                 Terms of Use
-              </a>
+              </Link>
             </li>
           </ul>
         </div>

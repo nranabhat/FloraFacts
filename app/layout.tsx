@@ -3,6 +3,8 @@
 import type { Metadata } from 'next'
 import { Lobster } from 'next/font/google'
 import './globals.css'
+import Header from './components/Header'
+import { GalleryProvider } from './context/GalleryContext'
 
 const lobster = Lobster({
   weight: '400',
@@ -23,7 +25,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-green-50">
-        {children}
+        <GalleryProvider>
+          <Header />
+          {children}
+        </GalleryProvider>
       </body>
     </html>
   )

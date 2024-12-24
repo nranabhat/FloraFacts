@@ -18,7 +18,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-[calc(100vh-64px)] flex flex-col">
       <main className="flex-1">
         <div className="flex flex-col items-center justify-center p-8">
           <button 
