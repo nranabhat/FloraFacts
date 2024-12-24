@@ -65,8 +65,8 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
             videoRef.current.onloadedmetadata = () => {
               videoRef.current!.play()
                 .then(() => resolve(true))
-                .catch(err => {
-                  console.error('Error playing video:', err)
+                .catch(() => {
+                  console.error('Error playing video')
                   setCameraError('Failed to start video stream')
                 })
             }
@@ -92,8 +92,8 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
               videoRef.current.onloadedmetadata = () => {
                 videoRef.current!.play()
                   .then(() => resolve(true))
-                  .catch(err => {
-                    console.error('Error playing video:', err)
+                  .catch(() => {
+                    console.error('Error playing video')
                     setCameraError('Failed to start video stream')
                   })
               }

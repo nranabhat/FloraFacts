@@ -1,7 +1,6 @@
 'use client'
 
 import { Lobster } from 'next/font/google'
-import Image from 'next/image'
 
 const lobster = Lobster({
   weight: '400',
