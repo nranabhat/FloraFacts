@@ -61,7 +61,7 @@ export default function Home() {
                   AI Magic
                 </h3>
                 <p className="text-gray-600 text-sm">
-                  Our plant-loving AI analyzes your photo faster than you can say "photosynthesis"!
+                  Our plant-loving AI analyzes your photo faster than you can say &quot;photosynthesis&quot;!
                 </p>
               </div>
 

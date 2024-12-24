@@ -17,6 +17,12 @@ interface GalleryContextType {
 
 const GalleryContext = createContext<GalleryContextType | undefined>(undefined)
 
+interface GalleryItemParsed {
+  image: string;
+  plantInfo: PlantInfo;
+  timestamp: string;
+}
+
 export function GalleryProvider({ children }: { children: ReactNode }) {
   const [gallery, setGallery] = useState<GalleryItem[]>([])
 
@@ -25,9 +31,8 @@ export function GalleryProvider({ children }: { children: ReactNode }) {
     const savedGallery = localStorage.getItem('plantGallery')
     if (savedGallery) {
       try {
-        const parsed = JSON.parse(savedGallery)
-        // Convert string dates back to Date objects
-        const galleryWithDates = parsed.map((item: any) => ({
+        const parsed = JSON.parse(savedGallery) as GalleryItemParsed[]
+        const galleryWithDates = parsed.map((item) => ({
           ...item,
           timestamp: new Date(item.timestamp)
         }))
