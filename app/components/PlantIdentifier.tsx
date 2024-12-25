@@ -1,7 +1,6 @@
 'use client'
 
-import { useState} from 'react'
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import { useState } from 'react'
 import PhotoHandler from './PhotoHandler'
 import PlantInfoCard from './PlantInfoCard'
 import { PlantInfo } from '../types/PlantInfo'
@@ -13,8 +12,6 @@ export default function PlantIdentifier() {
   const [plantInfo, setPlantInfo] = useState<PlantInfo | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY || '')
 
   const { addToGallery } = useGallery()
 
@@ -28,55 +25,20 @@ export default function PlantIdentifier() {
     setError(null)
     
     try {
-      if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
-        throw new Error('Gemini API key is not configured')
+      const response = await fetch('/api/identify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ base64Image })
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to identify plant')
       }
 
-      const model = genAI.getGenerativeModel({ 
-        model: "gemini-1.5-flash" 
-      })
-      
-      // Updated prompt to request more structured JSON
-      const prompt = `
-        Analyze this plant image and return ONLY a JSON object with the following structure:
-        {
-          "name": "Common name of the plant",
-          "scientificName": "Full botanical/Latin name",
-          "description": "Brief, concise description (1-2 sentences max)",
-          "careInstructions": "Key care tips",
-          "additionalDetails": {
-            "nativeTo": "Region of origin",
-            "sunExposure": "Light requirements",
-            "waterNeeds": "Watering frequency",
-            "soilType": "Preferred soil conditions",
-            "growthRate": "Typical growth characteristics",
-            "bloomSeason": "Flowering period"
-          }
-        }
-
-        Important: 
-        - Respond ONLY with valid, parseable JSON
-        - Keep description very concise
-        - Provide practical, actionable details
-      `
-      
-      const base64Data = base64Image.split(',')[1]
-      
-      const result = await model.generateContent({
-        contents: [{ 
-          role: 'user', 
-          parts: [
-            { text: prompt },
-            { inlineData: { 
-              mimeType: 'image/jpeg', 
-              data: base64Data 
-            }}
-          ]
-        }]
-      })
-
-      const responseText = result.response.text()
-      
+      const { responseText } = await response.json()
       const parsedInfo = parseJsonResponse(responseText)
       
       setPlantInfo(parsedInfo)
