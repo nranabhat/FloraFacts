@@ -11,7 +11,7 @@ const lobster = Lobster({
 export default function About() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-12">
-      <h1 className={`${lobster.className} text-4xl text-green-800 mb-8 text-center`}>
+      <h1 className={`${lobster.className} text-4xl text-green-800 dark:text-green-500 mb-8 text-center`}>
         About FloraFacts 🌱
       </h1>
       
@@ -33,7 +33,7 @@ export default function About() {
 
         {/* Project Story */}
         <section className="bg-white p-8 rounded-2xl shadow-lg">
-          <h2 className={`${lobster.className} text-2xl text-green-700 mb-4`}>The Story</h2>
+          <h2 className={`${lobster.className} text-2xl text-green-700 dark:text-green-500 mb-4`}>The Story</h2>
           <p className="text-gray-700 mb-4">
             FloraFacts is my first dive into the world of full-stack development. 
             I wanted to create something that combines my interest in technology with 
@@ -74,7 +74,7 @@ export default function About() {
 
         {/* Learning Journey */}
         <section className="bg-green-50 p-8 rounded-2xl border-2 border-green-100">
-          <h2 className={`${lobster.className} text-2xl text-green-700 mb-4`}>What I&apos;ve Learned</h2>
+          <h2 className={`${lobster.className} text-2xl text-green-700 dark:text-green-500 mb-4`}>What I&apos;ve Learned</h2>
           <ul className="space-y-3 text-gray-700">
             <li className="flex items-center gap-2">
               <span className="text-xl">🌱</span>

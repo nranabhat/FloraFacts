@@ -23,10 +23,10 @@ export default function Home() {
         <div className="flex flex-col items-center justify-center p-8">
           <button 
             onClick={handleTitleClick}
-            className={`${lobster.className} text-5xl text-green-800 text-center mb-8 
+            className={`${lobster.className} text-5xl text-green-800 dark:text-green-500 text-center mb-8 
               relative cursor-pointer
               after:content-[''] after:absolute after:-bottom-2 after:left-0 after:right-0
-              after:h-1 after:bg-green-600 after:rounded-full after:transform after:scale-x-75
+              after:h-1 after:bg-green-600 dark:after:bg-green-400 after:rounded-full after:transform after:scale-x-75
               hover:scale-105 transition-transform duration-300
               focus:outline-none
             `}
@@ -39,7 +39,7 @@ export default function Home() {
 
           {/* How It Works Section */}
           <div className="mt-16 w-full max-w-4xl">
-            <h2 className={`${lobster.className} text-3xl text-green-800 text-center mb-8`}>
+            <h2 className={`${lobster.className} text-3xl text-green-800 dark:text-green-500 text-center mb-8`}>
               How It Works
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

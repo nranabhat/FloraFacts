@@ -17,7 +17,7 @@ export default function Gallery() {
   if (gallery.length === 0) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-12">
-        <h1 className={`${lobster.className} text-4xl text-green-800 mb-8 text-center`}>
+        <h1 className={`${lobster.className} text-4xl text-green-800 dark:text-green-500 mb-8 text-center`}>
           Your Plant Gallery
         </h1>
         
@@ -44,7 +44,7 @@ export default function Gallery() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12">
-      <h1 className={`${lobster.className} text-4xl text-green-800 mb-8 text-center`}>
+      <h1 className={`${lobster.className} text-4xl text-green-800 dark:text-green-500 mb-8 text-center`}>
         Your Plant Gallery
       </h1>
 
