@@ -2,6 +2,7 @@
 
 import { Lobster } from 'next/font/google'
 import Link from 'next/link'
+import { useTheme } from '../context/ThemeContext'
 
 const lobster = Lobster({
   weight: '400',
@@ -9,48 +10,50 @@ const lobster = Lobster({
   display: 'swap',
 })
 
-const Header = () => {
+export default function Header() {
+  const { theme, toggleTheme } = useTheme()
+
   return (
-    <header className="bg-white shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo/Branding */}
-          <div className="flex items-center">
+    <header className="bg-white dark:bg-gray-800 shadow-sm transition-colors duration-200">
+      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex">
             <Link 
-              href="/"
-              className={`${lobster.className} text-2xl text-green-800 
-              flex items-center gap-2 hover:text-green-700 transition-colors`}
+              href="/" 
+              className={`${lobster.className} text-2xl flex items-center gap-2 
+                text-green-800 dark:text-green-500 
+                hover:text-green-600 dark:hover:text-green-400 
+                transition-colors`}
             >
               <span className="text-2xl">🌿</span>
               FloraFacts
             </Link>
           </div>
-
-          {/* Navigation Links */}
-          <nav className="flex items-center gap-8">
+          
+          <div className="flex items-center space-x-4">
             <Link 
-              href="/"
-              className="text-gray-600 hover:text-green-800 transition-colors text-sm font-medium"
-            >
-              Home
-            </Link>
-            <Link 
-              href="/gallery"
-              className="text-gray-600 hover:text-green-800 transition-colors text-sm font-medium"
+              href="/gallery" 
+              className="text-green-800 dark:text-green-400 hover:text-green-600 dark:hover:text-green-300"
             >
               Gallery
             </Link>
             <Link 
-              href="/about"
-              className="text-gray-600 hover:text-green-800 transition-colors text-sm font-medium"
+              href="/about" 
+              className="text-green-800 dark:text-green-400 hover:text-green-600 dark:hover:text-green-300"
             >
-              About Us
+              About
             </Link>
-          </nav>
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg bg-green-100 dark:bg-gray-700 text-green-800 dark:text-green-400
+                hover:bg-green-200 dark:hover:bg-gray-600 transition-colors duration-200"
+              aria-label="Toggle theme"
+            >
+              {theme === 'light' ? '🌙' : '☀️'}
+            </button>
+          </div>
         </div>
-      </div>
+      </nav>
     </header>
   )
-}
-
-export default Header 
+} 

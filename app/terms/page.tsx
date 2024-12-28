@@ -11,7 +11,7 @@ const lobster = Lobster({
 export default function Terms() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-12">
-      <h1 className={`${lobster.className} text-4xl text-green-800 mb-8`}>Terms of Use</h1>
+      <h1 className={`${lobster.className} text-4xl text-green-800 dark:text-green-500 mb-8`}>Terms of Use</h1>
       
       <div className="space-y-8 text-gray-700">
         <section>
