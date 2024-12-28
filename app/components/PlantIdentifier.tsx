@@ -7,6 +7,26 @@ import { PlantInfo } from '../types/PlantInfo'
 import Image from 'next/image'
 import { useGallery } from '../context/GalleryContext'
 
+const LoadingAnimation = () => (
+  <div className="flex justify-center items-center py-4">
+    <div className="relative">
+      {/* Stem */}
+      <div className="w-1 h-8 bg-green-500 dark:bg-green-600 mx-auto 
+        animate-grow-stem origin-bottom"></div>
+      {/* Leaf */}
+      <div className="absolute -right-2 top-2">
+        <div className="w-4 h-4 bg-green-400 dark:bg-green-500 rounded-full 
+          animate-wave-leaf origin-bottom-left"></div>
+      </div>
+      {/* Second Leaf */}
+      <div className="absolute -left-2 top-4">
+        <div className="w-3 h-3 bg-green-400 dark:bg-green-500 rounded-full 
+          animate-wave-leaf-delay origin-bottom-right"></div>
+      </div>
+    </div>
+  </div>
+)
+
 export default function PlantIdentifier() {
   const [image, setImage] = useState<string | null>(null)
   const [plantInfo, setPlantInfo] = useState<PlantInfo | null>(null)
@@ -119,17 +139,14 @@ export default function PlantIdentifier() {
       </div>
 
       {/* Main content */}
-      <div className="w-full bg-white rounded-xl shadow-lg p-4 space-y-3">
+      <div className="w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 space-y-3 
+        border border-green-100 dark:border-gray-700 transition-colors duration-200">
         <PhotoHandler 
           onImageCapture={handleImageCapture}
           currentImage={image}
         />
 
-        {isLoading && (
-          <div className="text-center text-green-600 text-base">
-            Identifying plant...
-          </div>
-        )}
+        {isLoading && <LoadingAnimation />}
 
         {error && (
           <div className="text-red-500 text-center text-base">

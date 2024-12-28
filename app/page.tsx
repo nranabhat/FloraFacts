@@ -44,34 +44,37 @@ export default function Home() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Card 1 */}
-              <div className="bg-white p-6 rounded-2xl shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg 
+                transform hover:-translate-y-1 transition-all duration-300">
                 <div className="text-3xl mb-3">📸</div>
-                <h3 className="text-lg font-semibold text-green-800 mb-2">
+                <h3 className="text-lg font-semibold text-green-800 dark:text-green-500 mb-2">
                   Snap or Upload
                 </h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
                   Take a photo of any plant that catches your eye, or upload one from your garden adventures!
                 </p>
               </div>
 
               {/* Card 2 */}
-              <div className="bg-white p-6 rounded-2xl shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg 
+                transform hover:-translate-y-1 transition-all duration-300">
                 <div className="text-3xl mb-3">🤖</div>
-                <h3 className="text-lg font-semibold text-green-800 mb-2">
+                <h3 className="text-lg font-semibold text-green-800 dark:text-green-500 mb-2">
                   AI Magic
                 </h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
                   Our plant-loving AI analyzes your photo faster than you can say &quot;photosynthesis&quot;!
                 </p>
               </div>
 
               {/* Card 3 */}
-              <div className="bg-white p-6 rounded-2xl shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
+              <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg 
+                transform hover:-translate-y-1 transition-all duration-300">
                 <div className="text-3xl mb-3">🌿</div>
-                <h3 className="text-lg font-semibold text-green-800 mb-2">
+                <h3 className="text-lg font-semibold text-green-800 dark:text-green-500 mb-2">
                   Plant Paradise
                 </h3>
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
                   Get instant info about your plant, from care tips to fun facts. No green thumb required!
                 </p>
               </div>

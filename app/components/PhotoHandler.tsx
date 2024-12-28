@@ -180,18 +180,18 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
                 className="hidden" 
               />
               
-              {/* Camera Button - Now First */}
+              {/* Camera Button */}
               <button
                 onClick={handleTakePhoto}
                 className="w-24 h-24 flex flex-col items-center justify-center 
-                bg-white rounded-2xl shadow-lg 
-                hover:shadow-xl hover:-translate-y-1 
-                transition-all duration-300
-                border-2 border-green-500/10"
+                  bg-white dark:bg-gray-800 rounded-2xl shadow-lg 
+                  hover:shadow-xl hover:-translate-y-1 
+                  transition-all duration-300
+                  border-2 border-green-500/10 dark:border-green-500/20"
                 title="Take Photo"
               >
                 <svg 
-                  className="w-8 h-8 text-green-600 mb-2" 
+                  className="w-8 h-8 text-green-600 dark:text-green-500 mb-2" 
                   fill="none" 
                   viewBox="0 0 24 24" 
                   stroke="currentColor"
@@ -211,18 +211,18 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
                 </svg>
               </button>
 
-              {/* Upload Button - Now Second */}
+              {/* Upload Button */}
               <label 
                 htmlFor="plant-upload" 
                 className="w-24 h-24 flex flex-col items-center justify-center 
-                bg-white rounded-2xl shadow-lg 
-                hover:shadow-xl hover:-translate-y-1 
-                transition-all duration-300 cursor-pointer
-                border-2 border-green-500/10"
+                  bg-white dark:bg-gray-800 rounded-2xl shadow-lg 
+                  hover:shadow-xl hover:-translate-y-1 
+                  transition-all duration-300 cursor-pointer
+                  border-2 border-green-500/10 dark:border-green-500/20"
                 title="Upload Image"
               >
                 <svg 
-                  className="w-8 h-8 text-green-600 mb-2" 
+                  className="w-8 h-8 text-green-600 dark:text-green-500 mb-2" 
                   fill="none" 
                   viewBox="0 0 24 24" 
                   stroke="currentColor"
@@ -235,7 +235,7 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
                   />
                 </svg>
                 {currentImage && (
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-1"></div>
+                  <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full mt-1"></div>
                 )}
               </label>
             </>
@@ -262,16 +262,18 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
               <button
                 onClick={stopCamera}
                 className="flex-1 py-1.5 px-3 
-                bg-gray-500 text-white rounded-lg 
-                hover:bg-gray-600 transition-colors duration-300 text-sm"
+                  bg-gray-500 dark:bg-gray-700 text-white rounded-lg 
+                  hover:bg-gray-600 dark:hover:bg-gray-600 
+                  transition-colors duration-300 text-sm"
               >
                 Cancel
               </button>
               <button
                 onClick={captureImage}
                 className="flex-1 py-1.5 px-3 
-                bg-green-500 text-white rounded-lg 
-                hover:bg-green-600 transition-colors duration-300 text-sm"
+                  bg-green-500 dark:bg-green-600 text-white rounded-lg 
+                  hover:bg-green-600 dark:hover:bg-green-500 
+                  transition-colors duration-300 text-sm"
               >
                 Capture
               </button>
@@ -281,7 +283,8 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
       )}
 
       {currentImage && !showCamera && isBrowser && (
-        <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden bg-gray-100">
+        <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden 
+          bg-gray-100 dark:bg-gray-800 transition-colors duration-200">
           <Image 
             src={currentImage} 
             alt="Uploaded plant" 

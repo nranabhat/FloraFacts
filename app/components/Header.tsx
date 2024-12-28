@@ -31,15 +31,6 @@ export default function Header() {
           </div>
           
           <div className="flex items-center space-x-4">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg bg-green-100 dark:bg-gray-700 text-green-800 dark:text-green-400
-                hover:bg-green-200 dark:hover:bg-gray-600 transition-colors duration-200"
-              aria-label="Toggle theme"
-            >
-              {theme === 'light' ? '🌙' : '☀️'}
-            </button>
-            
             <Link 
               href="/gallery" 
               className="text-green-800 dark:text-green-400 hover:text-green-600 dark:hover:text-green-300"
@@ -52,6 +43,14 @@ export default function Header() {
             >
               About
             </Link>
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg bg-green-100 dark:bg-gray-700 text-green-800 dark:text-green-400
+                hover:bg-green-200 dark:hover:bg-gray-600 transition-colors duration-200"
+              aria-label="Toggle theme"
+            >
+              {theme === 'light' ? '🌙' : '☀️'}
+            </button>
           </div>
         </div>
       </nav>
