@@ -9,19 +9,19 @@ import { useGallery } from '../context/GalleryContext'
 
 const LoadingAnimation = () => (
   <div className="flex justify-center items-center py-4">
-    <div className="relative">
-      {/* Stem */}
-      <div className="w-1 h-8 bg-green-500 dark:bg-green-600 mx-auto 
-        animate-grow-stem origin-bottom"></div>
-      {/* Leaf */}
-      <div className="absolute -right-2 top-2">
-        <div className="w-4 h-4 bg-green-400 dark:bg-green-500 rounded-full 
-          animate-wave-leaf origin-bottom-left"></div>
+    <div className="relative w-12 h-12">
+      {/* Spinning outer leaf */}
+      <div className="absolute inset-0 animate-spin-slow">
+        <div className="w-4 h-4 bg-green-400 dark:bg-green-500 
+          rounded-full transform -translate-y-2
+          shadow-lg"></div>
       </div>
-      {/* Second Leaf */}
-      <div className="absolute -left-2 top-4">
-        <div className="w-3 h-3 bg-green-400 dark:bg-green-500 rounded-full 
-          animate-wave-leaf-delay origin-bottom-right"></div>
+      
+      {/* Counter-spinning inner leaf */}
+      <div className="absolute inset-0 animate-spin-reverse-slow">
+        <div className="w-3 h-3 bg-green-500 dark:bg-green-600 
+          rounded-full transform translate-y-2
+          shadow-lg"></div>
       </div>
     </div>
   </div>
@@ -43,6 +43,7 @@ export default function PlantIdentifier() {
   const identifyPlant = async (base64Image: string) => {
     setIsLoading(true)
     setError(null)
+    setPlantInfo(null) // Reset plant info when starting new identification
     
     try {
       const response = await fetch('/api/identify', {
@@ -53,26 +54,24 @@ export default function PlantIdentifier() {
         body: JSON.stringify({ base64Image })
       })
 
+      const data = await response.json()
+
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to identify plant')
+        throw new Error(data.error || 'Failed to identify plant')
       }
 
-      const { responseText } = await response.json()
-      const parsedInfo = parseJsonResponse(responseText)
-      
+      const parsedInfo = parseJsonResponse(data.responseText)
       setPlantInfo(parsedInfo)
       addToGallery(base64Image, parsedInfo)
     } catch (err) {
       console.error('Plant Identification Error:', err)
       
-      if (err instanceof Error) {
-        setError(err.message === 'Failed to fetch' 
-          ? 'Network error. Please check your internet connection.' 
-          : err.message)
-      } else {
-        setError('An unexpected error occurred. Please try again.')
-      }
+      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred'
+      setError(
+        errorMessage === 'Rats! We couldn\'t find a plant in this image. Please try again.' 
+          ? errorMessage 
+          : 'Rats! We couldn\'t find a plant in this image. Please try again.'
+      )
     } finally {
       setIsLoading(false)
     }
@@ -149,8 +148,10 @@ export default function PlantIdentifier() {
         {isLoading && <LoadingAnimation />}
 
         {error && (
-          <div className="text-red-500 text-center text-base">
-            {error}
+          <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+            <div className="text-red-500 dark:text-red-400 text-base">
+              {error}
+            </div>
           </div>
         )}
 

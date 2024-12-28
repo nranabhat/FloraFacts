@@ -18,7 +18,36 @@ export async function POST(request: Request) {
       model: "gemini-1.5-flash" 
     })
     
-    const prompt = `
+    // First, verify if it's a plant
+    const verificationPrompt = `
+      Is this image clearly showing a plant? Please respond with ONLY "yes" or "no".
+      If the image is unclear, blurry, or doesn't primarily show a plant, respond with "no".
+    `
+
+    const verificationResult = await model.generateContent({
+      contents: [{ 
+        role: 'user', 
+        parts: [
+          { text: verificationPrompt },
+          { inlineData: { 
+            mimeType: 'image/jpeg', 
+            data: base64Image.split(',')[1] 
+          }}
+        ]
+      }]
+    })
+
+    const isPlant = verificationResult.response.text().toLowerCase().includes('yes')
+
+    if (!isPlant) {
+      return NextResponse.json(
+        { error: 'No plant detected. Please try using a clear picture of a plant.' },
+        { status: 400 }
+      )
+    }
+
+    // If it is a plant, proceed with the detailed analysis
+    const analysisPrompt = `
       Analyze this plant image and return ONLY a JSON object with the following structure:
       {
         "name": "Common name of the plant",
@@ -34,18 +63,13 @@ export async function POST(request: Request) {
           "bloomSeason": "Flowering period"
         }
       }
-
-      Important: 
-      - Respond ONLY with valid, parseable JSON
-      - Keep description very concise
-      - Provide practical, actionable details
     `
     
     const result = await model.generateContent({
       contents: [{ 
         role: 'user', 
         parts: [
-          { text: prompt },
+          { text: analysisPrompt },
           { inlineData: { 
             mimeType: 'image/jpeg', 
             data: base64Image.split(',')[1] 
