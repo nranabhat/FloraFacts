@@ -12,6 +12,7 @@ interface GalleryItem {
 interface GalleryContextType {
   gallery: GalleryItem[]
   addToGallery: (image: string, plantInfo: PlantInfo) => void
+  removeFromGallery: (index: number) => void
   clearGallery: () => void
 }
 
@@ -69,13 +70,28 @@ export function GalleryProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const removeFromGallery = (index: number) => {
+    const newGallery = gallery.filter((_, i) => i !== index)
+    setGallery(newGallery)
+    try {
+      localStorage.setItem('plantGallery', JSON.stringify(newGallery))
+    } catch (error) {
+      console.error('Error saving to gallery:', error)
+    }
+  }
+
   const clearGallery = () => {
     setGallery([])
     localStorage.removeItem('plantGallery')
   }
 
   return (
-    <GalleryContext.Provider value={{ gallery, addToGallery, clearGallery }}>
+    <GalleryContext.Provider value={{ 
+      gallery, 
+      addToGallery, 
+      removeFromGallery,
+      clearGallery 
+    }}>
       {children}
     </GalleryContext.Provider>
   )

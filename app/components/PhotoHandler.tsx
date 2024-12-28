@@ -13,6 +13,7 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
   const [cameraError, setCameraError] = useState<string | null>(null)
   const [isBrowser, setIsBrowser] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
+  const [imageSource, setImageSource] = useState<'camera' | 'upload' | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -30,6 +31,7 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
       reader.onloadend = async () => {
         const base64Image = reader.result as string
         onImageCapture(base64Image)
+        setImageSource('upload')
       }
       reader.readAsDataURL(file)
     }
@@ -149,6 +151,7 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
         }
 
         onImageCapture(imageData)
+        setImageSource('camera')
         stopCamera()
       } catch (err) {
         console.error('Capture Error:', err)
@@ -209,6 +212,9 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
                     d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" 
                   />
                 </svg>
+                {currentImage && imageSource === 'camera' && (
+                  <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full mt-1"></div>
+                )}
               </button>
 
               {/* Upload Button */}
@@ -234,7 +240,7 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" 
                   />
                 </svg>
-                {currentImage && (
+                {currentImage && imageSource === 'upload' && (
                   <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full mt-1"></div>
                 )}
               </label>

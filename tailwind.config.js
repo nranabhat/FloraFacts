@@ -9,21 +9,18 @@ module.exports = {
   theme: {
     extend: {
       keyframes: {
-        'grow-stem': {
-          '0%': { transform: 'scaleY(0.3)' },
-          '50%': { transform: 'scaleY(1.1)' },
-          '100%': { transform: 'scaleY(0.3)' },
+        'spin-slow': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
         },
-        'wave-leaf': {
-          '0%': { transform: 'rotate(-10deg) scale(0.5)' },
-          '50%': { transform: 'rotate(15deg) scale(1.1)' },
-          '100%': { transform: 'rotate(-10deg) scale(0.5)' },
+        'spin-reverse-slow': {
+          '0%': { transform: 'rotate(360deg)' },
+          '100%': { transform: 'rotate(0deg)' },
         }
       },
       animation: {
-        'grow-stem': 'grow-stem 2s ease-in-out infinite',
-        'wave-leaf': 'wave-leaf 2s ease-in-out infinite',
-        'wave-leaf-delay': 'wave-leaf 2s ease-in-out infinite 0.5s',
+        'spin-slow': 'spin-slow 3s linear infinite',
+        'spin-reverse-slow': 'spin-reverse-slow 2s linear infinite',
       }
     },
   },
