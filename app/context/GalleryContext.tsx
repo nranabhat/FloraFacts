@@ -12,17 +12,20 @@ import {
   query, 
   orderBy,
   serverTimestamp,
-  Timestamp 
+  Timestamp,
+  DocumentData
 } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 
-interface GalleryItem {
+// Define the structure of a gallery item
+export interface GalleryItem {
   id: string
   image: string
   plantInfo: PlantInfo
   timestamp: Date
 }
 
+// Define the context structure
 interface GalleryContextType {
   gallery: GalleryItem[]
   addToGallery: (image: string, plantInfo: PlantInfo) => Promise<void>
@@ -31,9 +34,15 @@ interface GalleryContextType {
   loading: boolean
 }
 
+// Create context with undefined check
 const GalleryContext = createContext<GalleryContextType | undefined>(undefined)
 
-export function GalleryProvider({ children }: { children: ReactNode }) {
+// Props interface for the provider
+interface GalleryProviderProps {
+  children: ReactNode
+}
+
+export function GalleryProvider({ children }: GalleryProviderProps) {
   const [gallery, setGallery] = useState<GalleryItem[]>([])
   const [loading, setLoading] = useState(true)
   const { user } = useAuth()
@@ -56,19 +65,20 @@ export function GalleryProvider({ children }: { children: ReactNode }) {
         const querySnapshot = await getDocs(q)
         
         console.log('Found documents:', querySnapshot.size)
-        const plants = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          image: doc.data().image,
-          plantInfo: doc.data().plantInfo,
-          timestamp: (doc.data().timestamp as Timestamp).toDate()
-        }))
+        const plants = querySnapshot.docs.map(doc => {
+          const data = doc.data()
+          return {
+            id: doc.id,
+            image: data.image,
+            plantInfo: data.plantInfo as PlantInfo,
+            timestamp: (data.timestamp as Timestamp).toDate()
+          }
+        })
 
         console.log('Processed plants:', plants)
         setGallery(plants)
       } catch (error) {
-        console.error('Error loading gallery. Full error:', error)
-        console.error('Error message:', error.message)
-        console.error('Error code:', error.code)
+        console.error('Error loading gallery:', error)
       } finally {
         setLoading(false)
       }
@@ -77,7 +87,7 @@ export function GalleryProvider({ children }: { children: ReactNode }) {
     loadGallery()
   }, [user])
 
-  const addToGallery = async (image: string, plantInfo: PlantInfo) => {
+  const addToGallery = async (image: string, plantInfo: PlantInfo): Promise<void> => {
     if (!user) {
       console.log('No user found, cannot add to gallery')
       return
@@ -134,17 +144,12 @@ export function GalleryProvider({ children }: { children: ReactNode }) {
       }, { merge: true })
 
     } catch (error) {
-      console.error('Detailed gallery error:', {
-        error,
-        message: error instanceof Error ? error.message : 'Unknown error',
-        code: error instanceof Error ? (error as any).code : undefined,
-        stack: error instanceof Error ? error.stack : undefined
-      })
+      console.error('Error adding to gallery:', error)
       throw error
     }
   }
 
-  const removeFromGallery = async (plantId: string) => {
+  const removeFromGallery = async (plantId: string): Promise<void> => {
     if (!user) return
 
     try {
@@ -159,7 +164,7 @@ export function GalleryProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const clearGallery = async () => {
+  const clearGallery = async (): Promise<void> => {
     if (!user) return
 
     try {
@@ -178,20 +183,22 @@ export function GalleryProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const value: GalleryContextType = {
+    gallery,
+    addToGallery,
+    removeFromGallery,
+    clearGallery,
+    loading
+  }
+
   return (
-    <GalleryContext.Provider value={{ 
-      gallery, 
-      addToGallery, 
-      removeFromGallery,
-      clearGallery,
-      loading
-    }}>
+    <GalleryContext.Provider value={value}>
       {children}
     </GalleryContext.Provider>
   )
 }
 
-export function useGallery() {
+export function useGallery(): GalleryContextType {
   const context = useContext(GalleryContext)
   if (context === undefined) {
     throw new Error('useGallery must be used within a GalleryProvider')
