@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext'
 import { useState } from 'react'
 import ProtectedRoute from '../components/ProtectedRoute'
 import AuthModal from '../components/AuthModal'
+import { LoadingSkeletonCard } from '../components/LoadingSkeleton'
 
 const lobster = Lobster({
   weight: '400',
@@ -17,7 +18,7 @@ const lobster = Lobster({
 
 export default function Gallery() {
   const { user } = useAuth()
-  const { gallery, removeFromGallery } = useGallery()
+  const { gallery, removeFromGallery, loading } = useGallery()
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
   const [selectedPlantId, setSelectedPlantId] = useState<string | null>(null)
@@ -108,6 +109,21 @@ export default function Gallery() {
     )
   }
 
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <h1 className={`${lobster.className} text-4xl text-green-800 dark:text-green-500 mb-8 text-center`}>
+          Your Plant Gallery
+        </h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <LoadingSkeletonCard key={i} />
+          ))}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <ProtectedRoute>
       <div className="max-w-7xl mx-auto px-4 py-12">
@@ -155,6 +171,28 @@ export default function Gallery() {
               </div>
             </div>
           ))}
+          
+          {/* Add Plant Card */}
+          <Link
+            href="/"
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden
+              border border-gray-200 dark:border-gray-700 transition-all
+              hover:shadow-lg hover:border-green-300 dark:hover:border-green-600
+              flex flex-col items-center justify-center min-h-[300px]
+              group"
+          >
+            <div className="text-gray-400 dark:text-gray-500 group-hover:text-green-500 
+              dark:group-hover:text-green-400 transition-colors">
+              <svg className="w-16 h-16" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </div>
+            <span className="mt-4 text-gray-600 dark:text-gray-400 group-hover:text-green-600 
+              dark:group-hover:text-green-400 transition-colors">
+              Identify New Plant
+            </span>
+          </Link>
         </div>
 
         {/* Confirmation Dialog */}

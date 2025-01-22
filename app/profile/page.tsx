@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import { useRouter } from 'next/navigation'
 import { Lobster } from 'next/font/google'
 import { FirebaseError } from 'firebase/app'
+import toast from 'react-hot-toast'
 
 const lobster = Lobster({
   weight: '400',
@@ -40,7 +41,7 @@ export default function Profile() {
       setIsDeleting(true)
       setError(null)
       await deleteAccount(password)
-      setSuccess('Account successfully deleted')
+      toast.success('Account deleted successfully')
       setTimeout(() => router.push('/'), 2000)
     } catch (error) {
       console.error('Error deleting account:', error)
@@ -70,7 +71,7 @@ export default function Profile() {
       setIsUpdating(true)
       setError(null)
       await updateUserEmail(newEmail, password)
-      setSuccess('Email updated successfully')
+      toast.success('Email updated successfully')
       setIsEditingEmail(false)
       setNewEmail('')
       setPassword('')
@@ -105,11 +106,11 @@ export default function Profile() {
       setIsUpdatingDisplayName(true)
       setError(null)
       await updateDisplayName(newDisplayName)
-      setSuccess('Display name updated successfully')
+      toast.success('Display name updated successfully')
       setIsEditingDisplayName(false)
     } catch (error) {
       console.error('Error updating display name:', error)
-      setError(error instanceof Error ? error.message : 'Failed to update display name. Please try again.')
+      toast.error(error instanceof Error ? error.message : 'Failed to update display name')
     } finally {
       setIsUpdatingDisplayName(false)
     }

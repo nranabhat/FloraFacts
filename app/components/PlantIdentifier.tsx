@@ -6,6 +6,9 @@ import PlantInfoCard from './PlantInfoCard'
 import { PlantInfo } from '../types/PlantInfo'
 import Image from 'next/image'
 import { useGallery } from '../context/GalleryContext'
+import toast from 'react-hot-toast'
+import { usePlant } from '../context/PlantContext'
+import { LoadingSkeletonPlantInfo } from './LoadingSkeleton'
 
 const LoadingAnimation = () => (
   <div className="flex justify-center items-center py-4">
@@ -28,25 +31,23 @@ const LoadingAnimation = () => (
 )
 
 export default function PlantIdentifier() {
-  const [image, setImage] = useState<string | null>(null)
-  const [plantInfo, setPlantInfo] = useState<PlantInfo | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
+  const { currentPlant, setCurrentPlant } = usePlant()
   const { addToGallery } = useGallery()
 
   const handleImageCapture = async (imageData: string) => {
-    setImage(imageData)
-    setSaved(false) // Reset saved state for new identification
+    setCurrentPlant(imageData, null)
+    setSaved(false)
     await identifyPlant(imageData)
   }
 
   const identifyPlant = async (base64Image: string) => {
     setIsLoading(true)
     setError(null)
-    setPlantInfo(null)
     
     try {
       const response = await fetch('/api/identify', {
@@ -60,11 +61,14 @@ export default function PlantIdentifier() {
       const data = await response.json()
 
       if (!response.ok) {
+        toast.error(data.error || 'Failed to identify plant')
         throw new Error(data.error || 'Failed to identify plant')
       }
 
+      toast.success('Plant identified successfully!')
+
       const parsedInfo = parseJsonResponse(data.responseText)
-      setPlantInfo(parsedInfo)
+      setCurrentPlant(base64Image, parsedInfo)
     } catch (err) {
       console.error('Plant Identification Error:', err)
       
@@ -80,15 +84,15 @@ export default function PlantIdentifier() {
   }
 
   const handleSaveToGallery = async () => {
-    if (!image || !plantInfo) {
-      console.log('Missing image or plantInfo:', { image: !!image, plantInfo: !!plantInfo })
+    if (!currentPlant.image || !currentPlant.plantInfo) {
+      console.log('Missing image or plantInfo:', { image: !!currentPlant.image, plantInfo: !!currentPlant.plantInfo })
       return
     }
     
     try {
       setIsSaving(true)
-      console.log('Attempting to save to gallery:', { plantInfo })
-      await addToGallery(image, plantInfo)
+      console.log('Attempting to save to gallery:', { plantInfo: currentPlant.plantInfo })
+      await addToGallery(currentPlant.image, currentPlant.plantInfo)
       setSaved(true)
     } catch (error) {
       console.error('Detailed save error:', {
@@ -103,8 +107,7 @@ export default function PlantIdentifier() {
   }
 
   const handleIdentifyAnother = () => {
-    setImage(null)
-    setPlantInfo(null)
+    setCurrentPlant(null, null)
     setError(null)
     setSaved(false)
   }
@@ -174,10 +177,10 @@ export default function PlantIdentifier() {
         border border-green-100 dark:border-gray-700 transition-colors duration-200">
         <PhotoHandler 
           onImageCapture={handleImageCapture}
-          currentImage={image}
+          currentImage={currentPlant.image}
         />
 
-        {isLoading && <LoadingAnimation />}
+        {isLoading && <LoadingSkeletonPlantInfo />}
 
         {error && (
           <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
@@ -187,9 +190,9 @@ export default function PlantIdentifier() {
           </div>
         )}
 
-        {plantInfo && !isLoading && (
+        {currentPlant.plantInfo && !isLoading && (
           <>
-            <PlantInfoCard plantInfo={plantInfo} />
+            <PlantInfoCard plantInfo={currentPlant.plantInfo} />
             
             <div className="flex gap-4 justify-center mt-6">
               {!saved ? (

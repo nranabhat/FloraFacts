@@ -70,6 +70,12 @@ export default function Header() {
           
           <div className="flex items-center space-x-4">
             <Link 
+              href="/" 
+              className="text-green-800 dark:text-green-400 hover:text-green-600 dark:hover:text-green-300"
+            >
+              Home
+            </Link>
+            <Link 
               href="/gallery" 
               className="text-green-800 dark:text-green-400 hover:text-green-600 dark:hover:text-green-300"
             >

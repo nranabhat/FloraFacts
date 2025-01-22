@@ -16,6 +16,7 @@ import {
   DocumentData
 } from 'firebase/firestore'
 import { db } from '../lib/firebase'
+import toast from 'react-hot-toast'
 
 // Define the structure of a gallery item
 export interface GalleryItem {
@@ -127,7 +128,7 @@ export function GalleryProvider({ children }: GalleryProviderProps) {
       })
 
       await setDoc(newPlantRef, plantData)
-      console.log('Plant saved successfully with ID:', newPlantRef.id)
+      toast.success('Plant added to gallery')
 
       // Update local state
       setGallery(prev => [{
@@ -144,6 +145,7 @@ export function GalleryProvider({ children }: GalleryProviderProps) {
       }, { merge: true })
 
     } catch (error) {
+      toast.error('Failed to add plant to gallery')
       console.error('Error adding to gallery:', error)
       throw error
     }
@@ -155,10 +157,12 @@ export function GalleryProvider({ children }: GalleryProviderProps) {
     try {
       const plantRef = doc(db, 'users', user.uid, 'plants', plantId)
       await deleteDoc(plantRef)
+      toast.success('Plant removed from gallery')
 
       // Update local state
       setGallery(prev => prev.filter(item => item.id !== plantId))
     } catch (error) {
+      toast.error('Failed to remove plant')
       console.error('Error removing from gallery:', error)
       throw error
     }
