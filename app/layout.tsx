@@ -6,6 +6,7 @@ import './globals.css'
 import Header from './components/Header'
 import { GalleryProvider } from './context/GalleryContext'
 import { ThemeProvider } from './context/ThemeContext'
+import { AuthProvider } from './context/AuthContext'
 
 // const lobster = Lobster({
 //   weight: '400',
@@ -27,10 +28,12 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-green-50 dark:bg-gray-900 transition-colors duration-200">
         <ThemeProvider>
-          <GalleryProvider>
-            <Header />
-            {children}
-          </GalleryProvider>
+          <AuthProvider>
+            <GalleryProvider>
+              <Header />
+              {children}
+            </GalleryProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
