@@ -121,7 +121,7 @@ export default function Header() {
                 onClick={() => setShowAuthModal(true)}
                 className="text-green-800 dark:text-green-400 hover:text-green-600 dark:hover:text-green-300"
               >
-                Sign In
+                Log In
               </button>
             )}
           </div>

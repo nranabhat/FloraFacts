@@ -9,7 +9,8 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  sendPasswordResetEmail
 } from 'firebase/auth'
 import { auth } from '../lib/firebase'
 
@@ -20,6 +21,7 @@ interface AuthContextType {
   signInWithEmail: (email: string, password: string) => Promise<void>
   signUpWithEmail: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
+  resetPassword: (email: string) => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -39,10 +41,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider()
+    provider.setCustomParameters({
+      prompt: 'select_account'
+    })
+    
     try {
       await signInWithPopup(auth, provider)
     } catch (error) {
-      console.error('Google sign in error:', error)
+      console.error('Google Log In error:', error)
       throw error
     }
   }
@@ -51,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await signInWithEmailAndPassword(auth, email, password)
     } catch (error) {
-      console.error('Email sign in error:', error)
+      console.error('Email Log In error:', error)
       throw error
     }
   }
@@ -74,6 +80,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const resetPassword = async (email: string) => {
+    try {
+      await sendPasswordResetEmail(auth, email)
+    } catch (error) {
+      console.error('Password reset error:', error)
+      throw error
+    }
+  }
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -81,7 +96,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signInWithGoogle,
       signInWithEmail,
       signUpWithEmail,
-      logout
+      logout,
+      resetPassword
     }}>
       {children}
     </AuthContext.Provider>

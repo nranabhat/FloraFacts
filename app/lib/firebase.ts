@@ -12,12 +12,24 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 }
 
+console.log('Firebase config:', {
+  ...firebaseConfig,
+  apiKey: firebaseConfig.apiKey ? 'exists' : 'missing'
+})
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
 
 // Get Firebase services
-export const auth = getAuth(app)
-export const db = getFirestore(app)
-export const storage = getStorage(app)
+const auth = getAuth(app)
+const db = getFirestore(app)
+const storage = getStorage(app)
 
+console.log('Firebase initialized:', {
+  auth: !!auth,
+  db: !!db,
+  storage: !!storage
+})
+
+export { auth, db, storage }
 export default app 
