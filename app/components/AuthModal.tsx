@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { FirebaseError } from 'firebase/app'
 import { fetchSignInMethodsForEmail } from 'firebase/auth'
@@ -20,6 +20,26 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
   const [resetSent, setResetSent] = useState(false)
   const [isCheckingEmail, setIsCheckingEmail] = useState(false)
   const { signInWithGoogle, signInWithEmail, signUpWithEmail, resetPassword } = useAuth()
+
+  // Add ref for modal content
+  const modalRef = useRef<HTMLDivElement>(null)
+
+  // Add click away listener
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        onClose()
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen, onClose])
 
   if (!isOpen) return null
 
@@ -114,8 +134,11 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-sm w-full">
-        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
+      <div 
+        ref={modalRef}
+        className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full"
+      >
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
           {mode === 'signin' ? 'Log In' : mode === 'signup' ? 'Sign Up' : 'Reset Password'}
         </h2>
 
@@ -146,9 +169,9 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
             </button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Email
               </label>
               <input
@@ -156,23 +179,29 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onBlur={handleEmailBlur}
-                className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 
-                  dark:bg-gray-700 dark:text-white shadow-sm p-2"
+                className="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 
+                  dark:bg-gray-700 dark:text-white shadow-sm p-2.5 
+                  focus:border-green-500 dark:focus:border-green-500 
+                  focus:ring-2 focus:ring-green-200 dark:focus:ring-green-800 
+                  transition-colors"
                 required
               />
             </div>
 
             {mode !== 'reset' && !error?.includes('Google account') && (
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Password
                 </label>
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 
-                    dark:bg-gray-700 dark:text-white shadow-sm p-2"
+                  className="mt-1 block w-full rounded-md border-2 border-gray-300 dark:border-gray-600 
+                    dark:bg-gray-700 dark:text-white shadow-sm p-2.5 
+                    focus:border-green-500 dark:focus:border-green-500 
+                    focus:ring-2 focus:ring-green-200 dark:focus:ring-green-800 
+                    transition-colors"
                   required
                 />
               </div>
