@@ -12,11 +12,6 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 }
 
-console.log('Firebase config:', {
-  ...firebaseConfig,
-  apiKey: firebaseConfig.apiKey ? 'exists' : 'missing'
-})
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
 

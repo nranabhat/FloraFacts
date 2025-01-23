@@ -13,7 +13,6 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
   const [cameraError, setCameraError] = useState<string | null>(null)
   const [isBrowser, setIsBrowser] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
-  const [imageSource, setImageSource] = useState<'camera' | 'upload' | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -31,7 +30,6 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
       reader.onloadend = async () => {
         const base64Image = reader.result as string
         onImageCapture(base64Image)
-        setImageSource('upload')
       }
       reader.readAsDataURL(file)
     }
@@ -151,7 +149,6 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
         }
 
         onImageCapture(imageData)
-        setImageSource('camera')
         stopCamera()
       } catch (err) {
         console.error('Capture Error:', err)

@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext'
 import { FirebaseError } from 'firebase/app'
 import { fetchSignInMethodsForEmail } from 'firebase/auth'
 import { auth } from '../lib/firebase'
+import Image from 'next/image'
 
 interface AuthModalProps {
   isOpen: boolean
@@ -237,7 +238,13 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
                 flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-gray-700 
                 transition-colors"
             >
-              <img src="/google-icon.svg" alt="Google" className="w-5 h-5" />
+              <Image 
+                src="/google-logo.png" 
+                alt="Google Logo" 
+                width={20} 
+                height={20}
+                className="w-5 h-5"
+              />
               Continue with Google
             </button>
           </>

@@ -32,7 +32,6 @@ export default function Profile() {
   
   // State for notifications
   const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState<string | null>(null)
 
   // Add state for display name
   const [isEditingDisplayName, setIsEditingDisplayName] = useState(false)
@@ -157,13 +156,6 @@ export default function Profile() {
       <h1 className={`${lobster.className} text-4xl text-green-800 dark:text-green-500 mb-8 text-center`}>
         Profile Settings
       </h1>
-
-      {success && (
-        <div className="mb-4 p-3 bg-green-100 dark:bg-green-900/20 text-green-600 
-          dark:text-green-400 rounded">
-          {success}
-        </div>
-      )}
 
       {error && (
         <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/20 text-red-600 

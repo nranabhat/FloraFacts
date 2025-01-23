@@ -10,26 +10,6 @@ import toast from 'react-hot-toast'
 import { usePlant } from '../context/PlantContext'
 import { LoadingSkeletonPlantInfo } from './LoadingSkeleton'
 
-const LoadingAnimation = () => (
-  <div className="flex justify-center items-center py-4">
-    <div className="relative w-12 h-12">
-      {/* Spinning outer leaf */}
-      <div className="absolute inset-0 animate-spin-slow">
-        <div className="w-4 h-4 bg-green-400 dark:bg-green-500 
-          rounded-full transform -translate-y-2
-          shadow-lg"></div>
-      </div>
-      
-      {/* Counter-spinning inner leaf */}
-      <div className="absolute inset-0 animate-spin-reverse-slow">
-        <div className="w-3 h-3 bg-green-500 dark:bg-green-600 
-          rounded-full transform translate-y-2
-          shadow-lg"></div>
-      </div>
-    </div>
-  </div>
-)
-
 export default function PlantIdentifier() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
