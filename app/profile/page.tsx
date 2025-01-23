@@ -38,7 +38,7 @@ export default function Profile() {
   const [newDisplayName, setNewDisplayName] = useState(user?.displayName || '')
   const [isUpdatingDisplayName, setIsUpdatingDisplayName] = useState(false)
 
-  const [currentEmoji, setCurrentEmoji] = useState('👨')
+  const [currentEmoji, setCurrentEmoji] = useState('🌱')
   const [isEditingEmoji, setIsEditingEmoji] = useState(false)
 
   // Load emoji from profile
@@ -48,7 +48,7 @@ export default function Profile() {
         const profileRef = doc(db, 'users', user.uid, 'profile', 'info')
         const profileDoc = await getDoc(profileRef)
         if (profileDoc.exists()) {
-          setCurrentEmoji(profileDoc.data().profileEmoji || '👨')
+          setCurrentEmoji(profileDoc.data().profileEmoji || '🌱')
         }
       }
     }
@@ -62,10 +62,10 @@ export default function Profile() {
       await deleteAccount(password)
       toast.success('Account deleted successfully')
       setTimeout(() => router.push('/'), 2000)
-    } catch (error) {
-      console.error('Error deleting account:', error)
-      if (error instanceof FirebaseError) {
-        switch (error.code) {
+    } catch (err) {
+      console.error('Error deleting account:', err)
+      if (err instanceof FirebaseError) {
+        switch (err.code) {
           case 'auth/requires-recent-login':
             setEmailError('Please log in again before deleting your account')
             break
@@ -94,10 +94,10 @@ export default function Profile() {
       setIsEditingEmail(false)
       setNewEmail('')
       setPassword('')
-    } catch (error) {
-      console.error('Error updating email:', error)
-      if (error instanceof FirebaseError) {
-        switch (error.code) {
+    } catch (err) {
+      console.error('Error updating email:', err)
+      if (err instanceof FirebaseError) {
+        switch (err.code) {
           case 'auth/requires-recent-login':
             setEmailError('Please log in again before updating your email')
             break
@@ -140,7 +140,7 @@ export default function Profile() {
       setCurrentEmoji(emoji)
       toast.success('Profile emoji updated')
       setIsEditingEmoji(false)
-    } catch (error) {
+    } catch (err) {
       toast.error('Failed to update profile emoji')
     }
   }
