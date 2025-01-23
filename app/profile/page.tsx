@@ -31,7 +31,7 @@ export default function Profile() {
   const [isUpdating, setIsUpdating] = useState(false)
   
   // State for notifications
-  const [error, setError] = useState<string | null>(null)
+  const [emailError, setEmailError] = useState<string | null>(null)
 
   // Add state for display name
   const [isEditingDisplayName, setIsEditingDisplayName] = useState(false)
@@ -58,7 +58,7 @@ export default function Profile() {
   const handleDeleteAccount = async () => {
     try {
       setIsDeleting(true)
-      setError(null)
+      setEmailError(null)
       await deleteAccount(password)
       toast.success('Account deleted successfully')
       setTimeout(() => router.push('/'), 2000)
@@ -67,16 +67,16 @@ export default function Profile() {
       if (error instanceof FirebaseError) {
         switch (error.code) {
           case 'auth/requires-recent-login':
-            setError('Please log in again before deleting your account')
+            setEmailError('Please log in again before deleting your account')
             break
           case 'auth/wrong-password':
-            setError('Incorrect password')
+            setEmailError('Incorrect password')
             break
           default:
-            setError('Failed to delete account. Please try again.')
+            setEmailError('Failed to delete account. Please try again.')
         }
       } else {
-        setError('An unexpected error occurred')
+        setEmailError('An unexpected error occurred')
       }
     } finally {
       setIsDeleting(false)
@@ -88,7 +88,7 @@ export default function Profile() {
     e.preventDefault()
     try {
       setIsUpdating(true)
-      setError(null)
+      setEmailError(null)
       await updateUserEmail(newEmail, password)
       toast.success('Email updated successfully')
       setIsEditingEmail(false)
@@ -99,19 +99,19 @@ export default function Profile() {
       if (error instanceof FirebaseError) {
         switch (error.code) {
           case 'auth/requires-recent-login':
-            setError('Please log in again before updating your email')
+            setEmailError('Please log in again before updating your email')
             break
           case 'auth/wrong-password':
-            setError('Incorrect password')
+            setEmailError('Incorrect password')
             break
           case 'auth/invalid-email':
-            setError('Invalid email address')
+            setEmailError('Invalid email address')
             break
           default:
-            setError('Failed to update email. Please try again.')
+            setEmailError('Failed to update email. Please try again.')
         }
       } else {
-        setError('An unexpected error occurred')
+        setEmailError('An unexpected error occurred')
       }
     } finally {
       setIsUpdating(false)
@@ -123,7 +123,6 @@ export default function Profile() {
     e.preventDefault()
     try {
       setIsUpdatingDisplayName(true)
-      setError(null)
       await updateDisplayName(newDisplayName)
       toast.success('Display name updated successfully')
       setIsEditingDisplayName(false)
@@ -157,10 +156,10 @@ export default function Profile() {
         Profile Settings
       </h1>
 
-      {error && (
+      {emailError && (
         <div className="mb-4 p-3 bg-red-100 dark:bg-red-900/20 text-red-600 
           dark:text-red-400 rounded">
-          {error}
+          {emailError}
         </div>
       )}
 
