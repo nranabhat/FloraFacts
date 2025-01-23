@@ -13,7 +13,6 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
   const [cameraError, setCameraError] = useState<string | null>(null)
   const [isBrowser, setIsBrowser] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
-  const [imageSource, setImageSource] = useState<'camera' | 'upload' | null>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -31,7 +30,6 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
       reader.onloadend = async () => {
         const base64Image = reader.result as string
         onImageCapture(base64Image)
-        setImageSource('upload')
       }
       reader.readAsDataURL(file)
     }
@@ -151,7 +149,6 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
         }
 
         onImageCapture(imageData)
-        setImageSource('camera')
         stopCamera()
       } catch (err) {
         console.error('Capture Error:', err)
@@ -161,12 +158,20 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {!showCamera ? (
-        <div className="flex gap-4 justify-center">
+        <div>
+          {!currentImage && (
+            <div className="text-center mb-8">
+              <p className="text-2xl text-green-800 dark:text-green-400 font-medium mb-3">
+                Let's identify your plant! 🌿
+              </p>
+            </div>
+          )}
+          
           {isBrowser && (
-            <>
-              {/* Hidden file inputs remain the same */}
+            <div className="flex flex-col items-center gap-4">
+              {/* Hidden file inputs remain unchanged */}
               <input 
                 type="file" 
                 accept="image/*"
@@ -183,74 +188,68 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
                 className="hidden" 
               />
               
-              {/* Camera Button */}
-              <button
-                onClick={handleTakePhoto}
-                className="w-24 h-24 flex flex-col items-center justify-center 
-                  bg-white dark:bg-gray-800 rounded-2xl shadow-lg 
-                  hover:shadow-xl hover:-translate-y-1 
-                  transition-all duration-300
-                  border-2 border-green-500/10 dark:border-green-500/20"
-                title="Take Photo"
-              >
-                <svg 
-                  className="w-8 h-8 text-green-600 dark:text-green-500 mb-2" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" 
-                  />
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" 
-                  />
-                </svg>
-                {currentImage && imageSource === 'camera' && (
-                  <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full mt-1"></div>
-                )}
-              </button>
+              {!currentImage && (
+                <>
+                  {/* Camera Button */}
+                  <button
+                    onClick={handleTakePhoto}
+                    className="group w-64 h-32 flex flex-col items-center justify-center
+                      bg-gradient-to-b from-green-50 to-white 
+                      dark:from-gray-800 dark:to-gray-800/95
+                      rounded-2xl shadow-lg 
+                      hover:shadow-xl hover:-translate-y-1 
+                      transition-all duration-300
+                      border-2 border-green-100 dark:border-green-900"
+                    title="Take Photo"
+                  >
+                    <span className="text-4xl mb-2" role="img" aria-label="camera">
+                      📸
+                    </span>
+                    <span className="text-sm font-medium text-green-800 dark:text-green-400 
+                      group-hover:text-green-600 dark:group-hover:text-green-300
+                      transition-colors">
+                      Take a Photo
+                    </span>
+                  </button>
 
-              {/* Upload Button */}
-              <label 
-                htmlFor="plant-upload" 
-                className="w-24 h-24 flex flex-col items-center justify-center 
-                  bg-white dark:bg-gray-800 rounded-2xl shadow-lg 
-                  hover:shadow-xl hover:-translate-y-1 
-                  transition-all duration-300 cursor-pointer
-                  border-2 border-green-500/10 dark:border-green-500/20"
-                title="Upload Image"
-              >
-                <svg 
-                  className="w-8 h-8 text-green-600 dark:text-green-500 mb-2" 
-                  fill="none" 
-                  viewBox="0 0 24 24" 
-                  stroke="currentColor"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2} 
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" 
-                  />
-                </svg>
-                {currentImage && imageSource === 'upload' && (
-                  <div className="w-2 h-2 bg-green-500 dark:bg-green-400 rounded-full mt-1"></div>
-                )}
-              </label>
-            </>
+                  {/* Or Divider */}
+                  <div className="flex items-center gap-4 w-64 my-2">
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-green-200 dark:via-green-800 to-transparent"></div>
+                    <span className="text-green-600 dark:text-green-400 font-medium">or</span>
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-green-200 dark:via-green-800 to-transparent"></div>
+                  </div>
+
+                  {/* Upload Button */}
+                  <label 
+                    htmlFor="plant-upload" 
+                    className="group w-64 h-32 flex flex-col items-center justify-center
+                      bg-gradient-to-b from-green-50 to-white 
+                      dark:from-gray-800 dark:to-gray-800/95
+                      rounded-2xl shadow-lg 
+                      hover:shadow-xl hover:-translate-y-1 
+                      transition-all duration-300 cursor-pointer
+                      border-2 border-green-100 dark:border-green-900"
+                    title="Upload Image"
+                  >
+                    <span className="text-4xl mb-2" role="img" aria-label="upload">
+                      🌱
+                    </span>
+                    <span className="text-sm font-medium text-green-800 dark:text-green-400 
+                      group-hover:text-green-600 dark:group-hover:text-green-300
+                      transition-colors">
+                      Upload from Device
+                    </span>
+                  </label>
+                </>
+              )}
+            </div>
           )}
         </div>
       ) : (
         isBrowser && (
           <div className="space-y-3">
-            <div className="relative aspect-[4/3] w-full bg-black rounded-lg overflow-hidden">
+            <div className="relative aspect-[4/3] w-full bg-black rounded-xl overflow-hidden
+              border-2 border-green-100 dark:border-green-900">
               <video
                 ref={videoRef}
                 autoPlay
@@ -264,24 +263,26 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
                 </div>
               )}
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <button
                 onClick={stopCamera}
-                className="flex-1 py-1.5 px-3 
-                  bg-gray-500 dark:bg-gray-700 text-white rounded-lg 
-                  hover:bg-gray-600 dark:hover:bg-gray-600 
-                  transition-colors duration-300 text-sm"
+                className="flex-1 py-2 px-4
+                  bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 
+                  rounded-lg border border-gray-300 dark:border-gray-600
+                  hover:bg-gray-200 dark:hover:bg-gray-600 
+                  transition-all duration-300 text-sm"
               >
-                Cancel
+                ↩️ Cancel
               </button>
               <button
                 onClick={captureImage}
-                className="flex-1 py-1.5 px-3 
-                  bg-green-500 dark:bg-green-600 text-white rounded-lg 
-                  hover:bg-green-600 dark:hover:bg-green-500 
-                  transition-colors duration-300 text-sm"
+                className="flex-1 py-2 px-4
+                  bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-400
+                  rounded-lg border-2 border-green-100 dark:border-green-900
+                  hover:bg-green-100 dark:hover:bg-green-900/50
+                  transition-all duration-300 text-sm"
               >
-                Capture
+                📸 Capture
               </button>
             </div>
           </div>
@@ -289,8 +290,11 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
       )}
 
       {currentImage && !showCamera && isBrowser && (
-        <div className="relative w-full aspect-[16/9] rounded-lg overflow-hidden 
-          bg-gray-100 dark:bg-gray-800 transition-colors duration-200">
+        <div className="relative w-full aspect-[4/3] rounded-xl overflow-hidden 
+          border-2 border-green-100 dark:border-green-900 
+          bg-gradient-to-b from-green-50 to-white 
+          dark:from-gray-800 dark:to-gray-800/95
+          shadow-lg">
           <Image 
             src={currentImage} 
             alt="Uploaded plant" 

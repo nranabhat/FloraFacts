@@ -6,44 +6,28 @@ import PlantInfoCard from './PlantInfoCard'
 import { PlantInfo } from '../types/PlantInfo'
 import Image from 'next/image'
 import { useGallery } from '../context/GalleryContext'
-
-const LoadingAnimation = () => (
-  <div className="flex justify-center items-center py-4">
-    <div className="relative w-12 h-12">
-      {/* Spinning outer leaf */}
-      <div className="absolute inset-0 animate-spin-slow">
-        <div className="w-4 h-4 bg-green-400 dark:bg-green-500 
-          rounded-full transform -translate-y-2
-          shadow-lg"></div>
-      </div>
-      
-      {/* Counter-spinning inner leaf */}
-      <div className="absolute inset-0 animate-spin-reverse-slow">
-        <div className="w-3 h-3 bg-green-500 dark:bg-green-600 
-          rounded-full transform translate-y-2
-          shadow-lg"></div>
-      </div>
-    </div>
-  </div>
-)
+import toast from 'react-hot-toast'
+import { usePlant } from '../context/PlantContext'
+import { LoadingSkeletonPlantInfo } from './LoadingSkeleton'
 
 export default function PlantIdentifier() {
-  const [image, setImage] = useState<string | null>(null)
-  const [plantInfo, setPlantInfo] = useState<PlantInfo | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
 
+  const { currentPlant, setCurrentPlant } = usePlant()
   const { addToGallery } = useGallery()
 
   const handleImageCapture = async (imageData: string) => {
-    setImage(imageData)
+    setCurrentPlant(imageData, null)
+    setSaved(false)
     await identifyPlant(imageData)
   }
 
   const identifyPlant = async (base64Image: string) => {
     setIsLoading(true)
     setError(null)
-    setPlantInfo(null) // Reset plant info when starting new identification
     
     try {
       const response = await fetch('/api/identify', {
@@ -57,12 +41,14 @@ export default function PlantIdentifier() {
       const data = await response.json()
 
       if (!response.ok) {
+        toast.error(data.error || 'Failed to identify plant')
         throw new Error(data.error || 'Failed to identify plant')
       }
 
+      toast.success('Plant identified successfully!')
+
       const parsedInfo = parseJsonResponse(data.responseText)
-      setPlantInfo(parsedInfo)
-      addToGallery(base64Image, parsedInfo)
+      setCurrentPlant(base64Image, parsedInfo)
     } catch (err) {
       console.error('Plant Identification Error:', err)
       
@@ -75,6 +61,35 @@ export default function PlantIdentifier() {
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleSaveToGallery = async () => {
+    if (!currentPlant.image || !currentPlant.plantInfo) {
+      console.log('Missing image or plantInfo:', { image: !!currentPlant.image, plantInfo: !!currentPlant.plantInfo })
+      return
+    }
+    
+    try {
+      setIsSaving(true)
+      console.log('Attempting to save to gallery:', { plantInfo: currentPlant.plantInfo })
+      await addToGallery(currentPlant.image, currentPlant.plantInfo)
+      setSaved(true)
+    } catch (error) {
+      console.error('Detailed save error:', {
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      })
+      setError('Failed to save to gallery. Please try again.')
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleIdentifyAnother = () => {
+    setCurrentPlant(null, null)
+    setError(null)
+    setSaved(false)
   }
 
   // JSON parsing function with error handling
@@ -142,10 +157,10 @@ export default function PlantIdentifier() {
         border border-green-100 dark:border-gray-700 transition-colors duration-200">
         <PhotoHandler 
           onImageCapture={handleImageCapture}
-          currentImage={image}
+          currentImage={currentPlant.image}
         />
 
-        {isLoading && <LoadingAnimation />}
+        {isLoading && <LoadingSkeletonPlantInfo />}
 
         {error && (
           <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
@@ -155,7 +170,56 @@ export default function PlantIdentifier() {
           </div>
         )}
 
-        {plantInfo && !isLoading && <PlantInfoCard plantInfo={plantInfo} />}
+        {currentPlant.plantInfo && !isLoading && (
+          <>
+            <PlantInfoCard plantInfo={currentPlant.plantInfo} />
+            
+            <div className="flex gap-4 justify-center mt-6">
+              {!saved ? (
+                <button
+                  onClick={handleSaveToGallery}
+                  disabled={isSaving}
+                  className="px-4 py-2 bg-green-600 text-white rounded-lg 
+                    hover:bg-green-700 transition-colors disabled:opacity-50
+                    disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {isSaving ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent 
+                        rounded-full animate-spin"></div>
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                          d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                      </svg>
+                      Save to Gallery
+                    </>
+                  )}
+                </button>
+              ) : (
+                <span className="text-green-600 dark:text-green-400 flex items-center gap-2">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                      d="M5 13l4 4L19 7" />
+                  </svg>
+                  Saved!
+                </span>
+              )}
+              
+              <button
+                onClick={handleIdentifyAnother}
+                className="px-4 py-2 border border-green-600 text-green-600 
+                  dark:border-green-400 dark:text-green-400 rounded-lg
+                  hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
+              >
+                Identify Another
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
