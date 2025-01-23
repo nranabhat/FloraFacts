@@ -1,11 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useRouter } from 'next/navigation'
 import { Lobster } from 'next/font/google'
 import { FirebaseError } from 'firebase/app'
 import toast from 'react-hot-toast'
+import EmojiPicker from '../components/EmojiPicker'
+import { doc, getDoc } from 'firebase/firestore'
+import { db } from '../lib/firebase'
 
 const lobster = Lobster({
   weight: '400',
@@ -14,7 +17,7 @@ const lobster = Lobster({
 })
 
 export default function Profile() {
-  const { user, deleteAccount, updateUserEmail, updateDisplayName } = useAuth()
+  const { user, deleteAccount, updateUserEmail, updateDisplayName, updateProfileEmoji } = useAuth()
   const router = useRouter()
   
   // State for account deletion
@@ -35,6 +38,23 @@ export default function Profile() {
   const [isEditingDisplayName, setIsEditingDisplayName] = useState(false)
   const [newDisplayName, setNewDisplayName] = useState(user?.displayName || '')
   const [isUpdatingDisplayName, setIsUpdatingDisplayName] = useState(false)
+
+  const [currentEmoji, setCurrentEmoji] = useState('👨')
+  const [isEditingEmoji, setIsEditingEmoji] = useState(false)
+
+  // Load emoji from profile
+  useEffect(() => {
+    async function loadProfileEmoji() {
+      if (user) {
+        const profileRef = doc(db, 'users', user.uid, 'profile', 'info')
+        const profileDoc = await getDoc(profileRef)
+        if (profileDoc.exists()) {
+          setCurrentEmoji(profileDoc.data().profileEmoji || '👨')
+        }
+      }
+    }
+    loadProfileEmoji()
+  }, [user])
 
   const handleDeleteAccount = async () => {
     try {
@@ -113,6 +133,17 @@ export default function Profile() {
       toast.error(error instanceof Error ? error.message : 'Failed to update display name')
     } finally {
       setIsUpdatingDisplayName(false)
+    }
+  }
+
+  const handleUpdateEmoji = async (emoji: string) => {
+    try {
+      await updateProfileEmoji(emoji)
+      setCurrentEmoji(emoji)
+      toast.success('Profile emoji updated')
+      setIsEditingEmoji(false)
+    } catch (error) {
+      toast.error('Failed to update profile emoji')
     }
   }
 
@@ -203,10 +234,40 @@ export default function Profile() {
                 </div>
                 <button
                   onClick={() => setIsEditingDisplayName(true)}
-                  className="text-green-600 hover:text-green-700 text-sm"
+                  className="text-gray-500 dark:text-gray-400 hover:text-green-600 
+                    dark:hover:text-green-400 transition-colors"
+                  title={user?.displayName ? 'Change Name' : 'Add Name'}
                 >
-                  {user?.displayName ? 'Change Name' : 'Add Name'}
+                  ✏️
                 </button>
+              </div>
+            )}
+          </div>
+
+          {/* Emoji Section */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Profile Emoji: </span>
+                <span className="text-2xl ml-2">{currentEmoji}</span>
+              </div>
+              <button
+                onClick={() => setIsEditingEmoji(!isEditingEmoji)}
+                className="text-gray-500 dark:text-gray-400 hover:text-green-600 
+                  dark:hover:text-green-400 transition-colors"
+                title="Change Emoji"
+              >
+                ✏️
+              </button>
+            </div>
+            
+            {isEditingEmoji && (
+              <div className="mt-4 p-4 bg-white dark:bg-gray-800 rounded-lg border 
+                border-gray-200 dark:border-gray-700">
+                <EmojiPicker
+                  selectedEmoji={currentEmoji}
+                  onSelect={handleUpdateEmoji}
+                />
               </div>
             )}
           </div>
@@ -268,14 +329,19 @@ export default function Profile() {
             </form>
           ) : (
             <div className="flex items-center justify-between">
-              <p className="text-gray-600 dark:text-gray-400">
-                Email: {user.email}
-              </p>
+              <div>
+                <span className="text-sm text-gray-500 dark:text-gray-400">Email: </span>
+                <span className="text-gray-900 dark:text-gray-100">
+                  {user.email}
+                </span>
+              </div>
               <button
                 onClick={() => setIsEditingEmail(true)}
-                className="text-green-600 hover:text-green-700 text-sm"
+                className="text-gray-500 dark:text-gray-400 hover:text-green-600 
+                  dark:hover:text-green-400 transition-colors"
+                title="Change Email"
               >
-                Change Email
+                ✏️
               </button>
             </div>
           )}

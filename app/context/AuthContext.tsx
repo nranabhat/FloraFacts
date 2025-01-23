@@ -18,7 +18,7 @@ import {
   updateProfile
 } from 'firebase/auth'
 import { auth } from '../lib/firebase'
-import { doc, deleteDoc, collection, getDocs, setDoc } from 'firebase/firestore'
+import { doc, deleteDoc, collection, getDocs, setDoc, getDoc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
 
 interface AuthContextType {
@@ -33,6 +33,8 @@ interface AuthContextType {
   updateUserEmail: (newEmail: string, password?: string) => Promise<void>
   reauthenticate: (password?: string) => Promise<void>
   updateDisplayName: (displayName: string) => Promise<void>
+  updateProfileEmoji: (emoji: string) => Promise<void>
+  userProfileEmoji: string | null
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -40,6 +42,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [userProfileEmoji, setUserProfileEmoji] = useState<string | null>(null)
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -49,6 +52,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => unsubscribe()
   }, [])
+
+  // Load profile emoji when user changes
+  useEffect(() => {
+    async function loadProfileEmoji() {
+      if (user) {
+        const profileRef = doc(db, 'users', user.uid, 'profile', 'info')
+        const profileDoc = await getDoc(profileRef)
+        if (profileDoc.exists() && profileDoc.data().profileEmoji) {
+          setUserProfileEmoji(profileDoc.data().profileEmoji)
+        } else {
+          setUserProfileEmoji('👨') // Default emoji
+        }
+      } else {
+        setUserProfileEmoji(null)
+      }
+    }
+    loadProfileEmoji()
+  }, [user])
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider()
@@ -198,6 +219,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }
 
+  const updateProfileEmoji = async (emoji: string) => {
+    if (!user) return
+
+    try {
+      const userProfileRef = doc(db, 'users', user.uid, 'profile', 'info')
+      await setDoc(userProfileRef, { profileEmoji: emoji }, { merge: true })
+      setUserProfileEmoji(emoji) // Update local state
+    } catch (error) {
+      console.error('Emoji update error:', error)
+      throw error
+    }
+  }
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -210,7 +244,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       deleteAccount,
       updateUserEmail,
       reauthenticate,
-      updateDisplayName
+      updateDisplayName,
+      updateProfileEmoji,
+      userProfileEmoji
     }}>
       {children}
     </AuthContext.Provider>
