@@ -127,9 +127,9 @@ export default function Profile() {
       await updateDisplayName(newDisplayName)
       toast.success('Display name updated successfully')
       setIsEditingDisplayName(false)
-    } catch (error) {
-      console.error('Error updating display name:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to update display name')
+    } catch (err) {
+      console.error('Error updating display name:', err)
+      toast.error(err instanceof Error ? err.message : 'Failed to update display name')
     } finally {
       setIsUpdatingDisplayName(false)
     }

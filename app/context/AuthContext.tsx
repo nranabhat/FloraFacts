@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { 
-  Auth,
   User,
   GoogleAuthProvider,
   signInWithPopup,

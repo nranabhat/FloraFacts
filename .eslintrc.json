@@ -8,7 +8,8 @@
   "rules": {
     "@typescript-eslint/no-unused-vars": ["error", {
       "argsIgnorePattern": "^_",
-      "varsIgnorePattern": "^_"
+      "varsIgnorePattern": "^_",
+      "ignoreRestSiblings": true
     }],
     "react/no-unescaped-entities": "off",
     "@typescript-eslint/no-explicit-any": "warn"
