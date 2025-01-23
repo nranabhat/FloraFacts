@@ -55,85 +55,32 @@ export default function Profile() {
     loadProfileEmoji()
   }, [user])
 
-  const handleDeleteAccount = async () => {
-    try {
-      setIsDeleting(true)
-      setEmailError(null)
-      await deleteAccount(password)
-      toast.success('Account deleted successfully')
-      setTimeout(() => router.push('/'), 2000)
-    } catch (err) {
-      console.error('Error deleting account:', err)
-      if (err instanceof FirebaseError) {
-        switch (err.code) {
-          case 'auth/requires-recent-login':
-            setEmailError('Please log in again before deleting your account')
-            break
-          case 'auth/wrong-password':
-            setEmailError('Incorrect password')
-            break
-          default:
-            setEmailError('Failed to delete account. Please try again.')
-        }
-      } else {
-        setEmailError('An unexpected error occurred')
+  // Add this helper function at the top of the file
+  const handleError = (err: unknown, defaultMessage: string) => {
+    // Log detailed error for developers
+    console.error(`Error: ${defaultMessage}`, {
+      error: err,
+      type: err instanceof Error ? err.constructor.name : typeof err,
+      message: err instanceof Error ? err.message : String(err)
+    })
+
+    // Show user-friendly message
+    if (err instanceof FirebaseError) {
+      switch (err.code) {
+        case 'auth/requires-recent-login':
+          return 'Please log in again before making changes'
+        case 'auth/wrong-password':
+          return 'Incorrect password'
+        case 'auth/invalid-email':
+          return 'Invalid email address'
+        default:
+          return defaultMessage
       }
-    } finally {
-      setIsDeleting(false)
-      setShowDeleteConfirm(false)
     }
+    return defaultMessage
   }
 
-  const handleUpdateEmail = async (e: React.FormEvent) => {
-    e.preventDefault()
-    try {
-      setIsUpdating(true)
-      setEmailError(null)
-      await updateUserEmail(newEmail, password)
-      toast.success('Email updated successfully')
-      setIsEditingEmail(false)
-      setNewEmail('')
-      setPassword('')
-    } catch (err) {
-      console.error('Error updating email:', err)
-      if (err instanceof FirebaseError) {
-        switch (err.code) {
-          case 'auth/requires-recent-login':
-            setEmailError('Please log in again before updating your email')
-            break
-          case 'auth/wrong-password':
-            setEmailError('Incorrect password')
-            break
-          case 'auth/invalid-email':
-            setEmailError('Invalid email address')
-            break
-          default:
-            setEmailError('Failed to update email. Please try again.')
-        }
-      } else {
-        setEmailError('An unexpected error occurred')
-      }
-    } finally {
-      setIsUpdating(false)
-    }
-  }
-
-  // Add handler for display name update
-  const handleUpdateDisplayName = async (e: React.FormEvent) => {
-    e.preventDefault()
-    try {
-      setIsUpdatingDisplayName(true)
-      await updateDisplayName(newDisplayName)
-      toast.success('Display name updated successfully')
-      setIsEditingDisplayName(false)
-    } catch (err) {
-      console.error('Error updating display name:', err)
-      toast.error(err instanceof Error ? err.message : 'Failed to update display name')
-    } finally {
-      setIsUpdatingDisplayName(false)
-    }
-  }
-
+  // Simplified handlers
   const handleUpdateEmoji = async (emoji: string) => {
     try {
       await updateProfileEmoji(emoji)
@@ -141,7 +88,55 @@ export default function Profile() {
       toast.success('Profile emoji updated')
       setIsEditingEmoji(false)
     } catch (err) {
-      toast.error('Failed to update profile emoji')
+      toast.error(handleError(err, 'Failed to update profile emoji'))
+    }
+  }
+
+  const handleUpdateDisplayName = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      setIsUpdatingDisplayName(true)
+      await updateDisplayName(newDisplayName)
+      toast.success('Display name updated')
+      setIsEditingDisplayName(false)
+    } catch (err) {
+      toast.error(handleError(err, 'Failed to update display name'))
+    } finally {
+      setIsUpdatingDisplayName(false)
+    }
+  }
+
+  const handleUpdateEmail = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      setIsUpdating(true)
+      await updateUserEmail(newEmail, password)
+      toast.success('Email updated')
+      setIsEditingEmail(false)
+      setNewEmail('')
+      setPassword('')
+    } catch (err) {
+      const errorMessage = handleError(err, 'Failed to update email')
+      toast.error(errorMessage)
+      setEmailError(errorMessage)
+    } finally {
+      setIsUpdating(false)
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    try {
+      setIsDeleting(true)
+      await deleteAccount(password)
+      toast.success('Account deleted')
+      setTimeout(() => router.push('/'), 2000)
+    } catch (err) {
+      const errorMessage = handleError(err, 'Failed to delete account')
+      toast.error(errorMessage)
+      setEmailError(errorMessage)
+    } finally {
+      setIsDeleting(false)
+      setShowDeleteConfirm(false)
     }
   }
 

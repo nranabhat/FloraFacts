@@ -239,7 +239,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
                 transition-colors"
             >
               <Image 
-                src="/google-logo.png" 
+                src="/google-icon.svg" 
                 alt="Google Logo" 
                 width={20} 
                 height={20}
