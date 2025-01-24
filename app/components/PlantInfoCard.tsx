@@ -4,14 +4,14 @@ interface PlantInfoCardProps {
   plantInfo: PlantInfo
 }
 
-// Add emoji mapping for each detail type
-const DETAIL_EMOJIS: Record<string, string> = {
-  nativeTo: "🌍",
-  sunExposure: "☀️",
-  waterNeeds: "💧",
-  soilType: "🪴",
-  growthRate: "📏",
-  bloomSeason: "🌸"
+// Add emoji mapping with tooltips
+const DETAIL_EMOJIS: Record<string, { icon: string, tooltip: string }> = {
+  nativeTo: { icon: "🌍", tooltip: "Native To" },
+  sunExposure: { icon: "☀️", tooltip: "Sun Exposure" },
+  waterNeeds: { icon: "💧", tooltip: "Water Needs" },
+  soilType: { icon: "🪴", tooltip: "Soil Type" },
+  growthRate: { icon: "📏", tooltip: "Growth Rate" },
+  bloomSeason: { icon: "🌸", tooltip: "Bloom Season" }
 }
 
 export default function PlantInfoCard({ plantInfo }: PlantInfoCardProps) {
@@ -44,47 +44,55 @@ export default function PlantInfoCard({ plantInfo }: PlantInfoCardProps) {
         </p>
       </div>
 
-      {/* Details Grid - changed from 2 columns to 1 */}
-      <div className="grid grid-cols-1 gap-3">
+      {/* Details Grid - updated layout */}
+      <div className="space-y-3">
         {Object.entries(plantInfo.additionalDetails).map(([key, value]) => (
           value && (
             <div key={key} 
-              className="flex items-start gap-3 p-3 bg-white/70 dark:bg-gray-900/30 
+              className="flex items-center gap-4 p-3 bg-white/70 dark:bg-gray-900/30 
                 rounded-lg border border-green-100 dark:border-green-900
                 hover:shadow-md transition-shadow duration-200"
             >
-              <span className="text-2xl" role="img" aria-label={key}>
-                {DETAIL_EMOJIS[key]}
-              </span>
-              <div className="min-w-0">
-                <dt className="text-sm font-medium text-green-800 dark:text-green-400 capitalize">
-                  {key.replace(/([A-Z])/g, ' $1').toLowerCase()}
-                </dt>
-                <dd className="text-gray-700 dark:text-gray-300 text-sm truncate">
-                  {value}
-                </dd>
+              <div className="relative group">
+                <span 
+                  className="text-2xl cursor-help"
+                  role="img" 
+                  aria-label={DETAIL_EMOJIS[key]?.tooltip}
+                >
+                  {DETAIL_EMOJIS[key]?.icon}
+                </span>
+                
+                {/* Tooltip */}
+                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1
+                  bg-gray-800 dark:bg-gray-700 text-white text-xs rounded
+                  opacity-0 group-hover:opacity-100 transition-opacity duration-200
+                  whitespace-nowrap pointer-events-none">
+                  {DETAIL_EMOJIS[key]?.tooltip}
+                </span>
               </div>
+
+              <span className="text-gray-700 dark:text-gray-300 text-sm break-words flex-1">
+                {value}
+              </span>
             </div>
           )
         ))}
       </div>
 
       {/* Care Instructions Section */}
-      {plantInfo.careInstructions && (
-        <div className="relative px-4 py-4 bg-white/50 dark:bg-gray-900/30 rounded-lg
-          border border-green-100 dark:border-green-900">
-          <span className="absolute -top-2.5 left-4 px-2 py-0.5 bg-green-100 dark:bg-green-900 
-            text-green-800 dark:text-green-200 text-xs rounded-full">
-            Care Guide
-          </span>
-          <div className="flex gap-3">
-            <span className="text-2xl" role="img" aria-label="care">🌱</span>
-            <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-              {plantInfo.careInstructions}
-            </p>
-          </div>
+      <div className="relative px-4 py-4 bg-white/50 dark:bg-gray-900/30 rounded-lg
+        border border-green-100 dark:border-green-900">
+        <span className="absolute -top-2.5 left-4 px-2 py-0.5 bg-green-100 dark:bg-green-900 
+          text-green-800 dark:text-green-200 text-xs rounded-full">
+          Care Guide
+        </span>
+        <div className="flex gap-3">
+          <span className="text-2xl" role="img" aria-label="care">🌱</span>
+          <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed break-words">
+            {plantInfo.careInstructions}
+          </p>
         </div>
-      )}
+      </div>
     </div>
   )
 } 
