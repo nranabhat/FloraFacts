@@ -34,6 +34,9 @@ export default function RootLayout({
             <PlantProvider>
               <GalleryProvider>
                 <Header />
+                <main className="pt-16">
+                  {children}
+                </main>
                 <Toaster
                   position="bottom-right"
                   toastOptions={{
@@ -67,7 +70,6 @@ export default function RootLayout({
                     },
                   }}
                 />
-                {children}
               </GalleryProvider>
             </PlantProvider>
           </AuthProvider>

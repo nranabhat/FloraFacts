@@ -8,16 +8,22 @@ import Image from 'next/image'
 import { useGallery } from '../context/GalleryContext'
 import toast from 'react-hot-toast'
 import { usePlant } from '../context/PlantContext'
-import { LoadingSkeletonPlantInfo } from './LoadingSkeleton'
+import { useAuth } from '../context/AuthContext'
+import AuthModal from './AuthModal'
+import GardenLoadingBar from './GardenLoadingBar'
+import Link from 'next/link'
 
 export default function PlantIdentifier() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [showSaveTooltip, setShowSaveTooltip] = useState(false)
 
   const { currentPlant, setCurrentPlant } = usePlant()
   const { addToGallery } = useGallery()
+  const { user } = useAuth()
 
   const handleImageCapture = async (imageData: string) => {
     setCurrentPlant(imageData, null)
@@ -92,6 +98,16 @@ export default function PlantIdentifier() {
     setSaved(false)
   }
 
+  const handleSaveClick = () => {
+    if (!user) {
+      setShowSaveTooltip(true)
+      setTimeout(() => setShowSaveTooltip(false), 3000)
+      return
+    }
+
+    handleSaveToGallery()
+  }
+
   // JSON parsing function with error handling
   const parseJsonResponse = (responseText: string): PlantInfo => {
     try {
@@ -160,7 +176,11 @@ export default function PlantIdentifier() {
           currentImage={currentPlant.image}
         />
 
-        {isLoading && <LoadingSkeletonPlantInfo />}
+        {isLoading && (
+          <div className="p-8">
+            <GardenLoadingBar />
+          </div>
+        )}
 
         {error && (
           <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
@@ -174,39 +194,72 @@ export default function PlantIdentifier() {
           <>
             <PlantInfoCard plantInfo={currentPlant.plantInfo} />
             
-            <div className="flex gap-4 justify-center mt-6">
+            <div className="flex justify-center gap-4 mt-6">
               {!saved ? (
-                <button
-                  onClick={handleSaveToGallery}
-                  disabled={isSaving}
-                  className="px-4 py-2 bg-green-600 text-white rounded-lg 
-                    hover:bg-green-700 transition-colors disabled:opacity-50
-                    disabled:cursor-not-allowed flex items-center gap-2"
-                >
-                  {isSaving ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent 
-                        rounded-full animate-spin"></div>
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                          d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                      </svg>
-                      Save to Gallery
-                    </>
+                <div className="relative">
+                  {showSaveTooltip && !user && (
+                    <div className="absolute -top-16 left-1/2 transform -translate-x-1/2 
+                      bg-white dark:bg-gray-800 px-4 py-2 rounded-lg shadow-lg
+                      border border-green-100 dark:border-green-900 w-72 text-center
+                      text-sm text-gray-600 dark:text-gray-300"
+                    >
+                      ✨ 
+                      <button
+                        onClick={() => setShowAuthModal(true)}
+                        className="inline-flex items-center gap-1 font-medium 
+                          text-green-600 dark:text-green-400 hover:underline"
+                      >
+                        Sign up
+                      </button>
+                      {' '}to save this plant and start your collection!
+                    </div>
                   )}
-                </button>
+                  
+                  <button
+                    onClick={handleSaveClick}
+                    disabled={isSaving}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg 
+                      hover:bg-green-700 transition-colors disabled:opacity-50
+                      disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {isSaving ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent 
+                          rounded-full animate-spin"></div>
+                        Saving...
+                      </>
+                    ) : !user ? (
+                      <>
+                        <span>🔒</span>
+                        Save to Gallery
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                            d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                        </svg>
+                        Save to Gallery
+                      </>
+                    )}
+                  </button>
+                </div>
               ) : (
-                <span className="text-green-600 dark:text-green-400 flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                      d="M5 13l4 4L19 7" />
-                  </svg>
-                  Saved!
-                </span>
+                <div className="flex items-center gap-3">
+                  <Link
+                    href="/gallery"
+                    className="px-4 py-2 bg-green-100 dark:bg-green-900/30 
+                      text-green-700 dark:text-green-300 rounded-lg
+                      hover:bg-green-200 dark:hover:bg-green-800/30 
+                      transition-colors flex items-center gap-2"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    View in Gallery
+                  </Link>
+                </div>
               )}
               
               <button
@@ -221,6 +274,12 @@ export default function PlantIdentifier() {
           </>
         )}
       </div>
+
+      <AuthModal 
+        isOpen={showAuthModal} 
+        onClose={() => setShowAuthModal(false)}
+        initialMode="signup"
+      />
     </div>
   )
 }
