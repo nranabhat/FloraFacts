@@ -85,7 +85,7 @@ export default function Header() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           {/* Logo */}
-          <div className="flex">
+          <div className="flex items-center">
             <Link 
               href="/"
               className={`${lobster.className} text-2xl flex items-center gap-2 
@@ -100,8 +100,9 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
+          {/* Right side: Navigation + Theme + Auth */}
           <div className="hidden md:flex items-center space-x-6">
+            {/* Navigation Links */}
             <Link 
               href="/"
               className={`relative px-3 py-2 font-medium group overflow-hidden rounded-lg
@@ -135,10 +136,8 @@ export default function Header() {
             >
               About
             </Link>
-          </div>
 
-          {/* Right side buttons */}
-          <div className="flex items-center space-x-4">
+            {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
               className="p-2 rounded-lg bg-green-50 dark:bg-gray-700 
@@ -150,8 +149,8 @@ export default function Header() {
               {theme === 'light' ? '🌙' : '☀️'}
             </button>
 
-            {/* Desktop auth button */}
-            <div className="hidden md:block relative">
+            {/* Auth Buttons */}
+            <div className="relative">
               {user ? (
                 <>
                   <button
@@ -234,29 +233,29 @@ export default function Header() {
                 </div>
               )}
             </div>
-
-            {/* Mobile menu button */}
-            <button
-              onClick={() => setShowMobileMenu(true)}
-              className="md:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300
-                hover:bg-gray-100 dark:hover:bg-gray-700"
-            >
-              <span className="sr-only">Open menu</span>
-              <svg 
-                className="w-6 h-6" 
-                fill="none" 
-                viewBox="0 0 24 24" 
-                stroke="currentColor"
-              >
-                <path 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round" 
-                  strokeWidth={2} 
-                  d="M4 6h16M4 12h16M4 18h16" 
-                />
-              </svg>
-            </button>
           </div>
+
+          {/* Mobile menu button */}
+          <button
+            onClick={() => setShowMobileMenu(true)}
+            className="md:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300
+              hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <span className="sr-only">Open menu</span>
+            <svg 
+              className="w-6 h-6" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M4 6h16M4 12h16M4 18h16" 
+              />
+            </svg>
+          </button>
         </div>
       </nav>
 
