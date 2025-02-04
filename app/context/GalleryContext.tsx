@@ -97,8 +97,16 @@ export function GalleryProvider({ children }: GalleryProviderProps) {
       console.log('Adding plant to gallery:', { 
         userId: user.uid,
         userEmail: user.email,
+        imageSize: image.length,
         plantInfo 
       })
+
+      // Check if image is too large (>1MB)
+      if (image.length > 1024 * 1024) {
+        // Compress the image
+        const compressedImage = await compressImage(image)
+        image = compressedImage
+      }
 
       // Check if plant already exists
       const isDuplicate = gallery.some(item => 
@@ -123,7 +131,7 @@ export function GalleryProvider({ children }: GalleryProviderProps) {
 
       console.log('About to save plant data:', {
         path: `users/${user.uid}/plants/${newPlantRef.id}`,
-        data: plantData
+        dataSize: JSON.stringify(plantData).length
       })
 
       await setDoc(newPlantRef, plantData)
@@ -144,8 +152,12 @@ export function GalleryProvider({ children }: GalleryProviderProps) {
       }, { merge: true })
 
     } catch (error) {
-      toast.error('Failed to add plant to gallery')
-      console.error('Error adding to gallery:', error)
+      console.error('Detailed save error:', {
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      })
+      toast.error('Failed to save to gallery')
       throw error
     }
   }
@@ -207,4 +219,48 @@ export function useGallery(): GalleryContextType {
     throw new Error('useGallery must be used within a GalleryProvider')
   }
   return context
+}
+
+// Add this helper function
+const compressImage = async (base64Image: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image()
+    img.src = base64Image
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      const ctx = canvas.getContext('2d')
+      if (!ctx) {
+        reject(new Error('Could not get canvas context'))
+        return
+      }
+
+      // Set maximum dimensions
+      const MAX_WIDTH = 1280
+      const MAX_HEIGHT = 1280
+
+      let width = img.width
+      let height = img.height
+
+      if (width > height) {
+        if (width > MAX_WIDTH) {
+          height *= MAX_WIDTH / width
+          width = MAX_WIDTH
+        }
+      } else {
+        if (height > MAX_HEIGHT) {
+          width *= MAX_HEIGHT / height
+          height = MAX_HEIGHT
+        }
+      }
+
+      canvas.width = width
+      canvas.height = height
+
+      ctx.drawImage(img, 0, 0, width, height)
+      resolve(canvas.toDataURL('image/jpeg', 0.8))
+    }
+
+    img.onerror = () => reject(new Error('Failed to load image for compression'))
+  })
 } 

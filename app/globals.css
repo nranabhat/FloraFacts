@@ -15,4 +15,86 @@
   --background-end-rgb: 0, 0, 0;
 }
 
+/* First, let's create a base gradient class */
+.page-gradient {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    180deg, 
+    rgba(249, 245, 240, 1) 0%, /* Cream */
+    rgba(236, 253, 245, 1) 30%, /* Very light green */
+    rgba(209, 250, 229, 1) 60%, /* Light green */
+    rgba(167, 243, 208, 1) 85%, /* Mint green */
+    rgba(52, 211, 153, 0.8) 100% /* More visible green */
+  );
+  z-index: 0;
+  pointer-events: none;
+}
+
+.dark .page-gradient {
+  background: linear-gradient(
+    180deg,
+    rgba(17, 24, 39, 1) 0%, /* Dark gray */
+    rgba(20, 83, 45, 0.8) 60%, /* Dark green */
+    rgba(20, 83, 45, 0.9) 85%, /* Darker green */
+    rgba(20, 83, 45, 1) 100% /* Full dark green */
+  );
+}
+
+/* Update mesh gradient to be more subtle */
+.mesh-gradient {
+  position: relative;
+  z-index: 1;
+  background-color: transparent;
+  background-image: 
+    linear-gradient(120deg, rgba(147, 197, 153, 0.1) 0%, rgba(126, 182, 161, 0.1) 100%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 100%);
+  background-size: 100% 100%, 50px 50px;
+  background-position: 0 0;
+}
+
+/* Add subtle grid overlay */
+.grid-overlay {
+  background-image: 
+    linear-gradient(rgba(130, 180, 130, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(130, 180, 130, 0.05) 1px, transparent 1px);
+  background-size: 50px 50px;
+  background-position: center center;
+}
+
+.dark .grid-overlay {
+  background-image: 
+    linear-gradient(rgba(130, 180, 130, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(130, 180, 130, 0.03) 1px, transparent 1px);
+}
+
+/* Add smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Ensure proper dark mode transitions */
+body {
+  transition: background-color 0.3s ease-in-out;
+}
+
+/* Update the footer styles */
+.footer-gradient {
+  background: linear-gradient(180deg, 
+    rgba(20, 83, 45, 0.95) 0%, 
+    rgba(20, 83, 45, 1) 100%
+  );
+  position: relative;
+}
+
+.dark .footer-gradient {
+  background: linear-gradient(180deg, 
+    rgba(17, 24, 39, 0.95) 0%, 
+    rgba(17, 24, 39, 1) 100%
+  );
+}
+
 /* Add any additional custom styles here */

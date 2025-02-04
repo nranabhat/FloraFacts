@@ -56,7 +56,10 @@ export default function Header() {
     const handleScroll = () => {
       const currentScrollY = window.scrollY
       
-      if (currentScrollY < lastScrollY.current) {
+      // Always show header if at the top of the page
+      if (currentScrollY <= 0) {
+        setIsVisible(true)
+      } else if (currentScrollY < lastScrollY.current) {
         // Scrolling up
         setIsVisible(true)
       } else if (currentScrollY > lastScrollY.current) {

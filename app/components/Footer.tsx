@@ -9,7 +9,7 @@ const Footer = () => {
   }
 
   return (
-    <footer className="bg-green-900 text-green-100 mt-24 py-8 px-8">
+    <footer className="footer-gradient text-green-100 mt-24 py-8 px-8">
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
         {/* About Section */}
         <div>
