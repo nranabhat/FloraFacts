@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
 import { useTheme } from '../context/ThemeContext'
 import { useAuth } from '../context/AuthContext'
-import AuthModal from './AuthModal'
+import { useAuthModal } from './AuthModalProvider'
 import { usePathname } from 'next/navigation'
 import MobileMenu from './MobileMenu'
 
@@ -18,7 +18,6 @@ const lobster = Lobster({
 export default function Header() {
   const { theme, toggleTheme } = useTheme()
   const { user, logout, userProfileEmoji } = useAuth()
-  const [showAuthModal, setShowAuthModal] = useState(false)
   const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [showUserDropdown, setShowUserDropdown] = useState(false)
   const pathname = usePathname()
@@ -27,6 +26,7 @@ export default function Header() {
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
   const [isVisible, setIsVisible] = useState(true)
   const lastScrollY = useRef(0)
+  const { showModal } = useAuthModal()
 
   const handleLogout = async () => {
     try {
@@ -38,7 +38,7 @@ export default function Header() {
 
   const handleAuthClick = (mode: 'signin' | 'signup') => {
     setAuthMode(mode)
-    setShowAuthModal(true)
+    showModal(mode)
   }
 
   // Handle click outside to close dropdown
@@ -265,13 +265,6 @@ export default function Header() {
         onClose={() => setShowMobileMenu(false)}
         userProfileEmoji={userProfileEmoji}
         onAuthClick={handleAuthClick}
-      />
-
-      {/* Auth modal */}
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)}
-        initialMode={authMode}
       />
     </header>
   )

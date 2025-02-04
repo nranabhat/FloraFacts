@@ -134,10 +134,10 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
       <div 
         ref={modalRef}
-        className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full"
+        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full"
       >
         <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
           {mode === 'signin' ? 'Log In' : mode === 'signup' ? 'Sign Up' : 'Reset Password'}

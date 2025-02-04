@@ -6,7 +6,7 @@ import PlantIdentifier from './components/PlantIdentifier'
 import Footer from './components/Footer'
 import { useAuth } from './context/AuthContext'
 import { useState } from 'react'
-import AuthModal from './components/AuthModal'
+import { useAuthModal } from './components/AuthModalProvider'
 
 const lobster = Lobster({
   weight: '400',
@@ -16,11 +16,15 @@ const lobster = Lobster({
 
 export default function Home() {
   const { user } = useAuth()
-  const [showAuthModal, setShowAuthModal] = useState(false)
+  const { showModal } = useAuthModal()
 
   const handleTitleClick = () => {
     // Reload the page
     window.location.reload()
+  }
+
+  const handleGetStarted = () => {
+    showModal('signup')
   }
 
   return (
@@ -104,7 +108,7 @@ export default function Home() {
                   and access your plant information anywhere.
                 </p>
                 <button
-                  onClick={() => setShowAuthModal(true)}
+                  onClick={handleGetStarted}
                   className="px-8 py-3 bg-green-600 text-white rounded-lg 
                     hover:bg-green-700 transition-all duration-300 
                     transform hover:scale-105 hover:shadow-md
@@ -118,13 +122,6 @@ export default function Home() {
         </div>
       </main>
       <Footer />
-      
-      {/* Auth Modal */}
-      <AuthModal 
-        isOpen={showAuthModal} 
-        onClose={() => setShowAuthModal(false)}
-        initialMode="signup"
-      />
     </div>
   )
 }
