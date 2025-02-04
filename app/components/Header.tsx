@@ -7,7 +7,7 @@ import { useTheme } from '../context/ThemeContext'
 import { useAuth } from '../context/AuthContext'
 import { useAuthModal } from './AuthModalProvider'
 import { usePathname } from 'next/navigation'
-import MobileMenu from './MobileMenu'
+import { useMobileMenu } from './MobileMenuProvider'
 
 const lobster = Lobster({
   weight: '400',
@@ -18,15 +18,14 @@ const lobster = Lobster({
 export default function Header() {
   const { theme, toggleTheme } = useTheme()
   const { user, logout, userProfileEmoji } = useAuth()
-  const [showMobileMenu, setShowMobileMenu] = useState(false)
   const [showUserDropdown, setShowUserDropdown] = useState(false)
   const pathname = usePathname()
   const dropdownRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
-  const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin')
   const [isVisible, setIsVisible] = useState(true)
   const lastScrollY = useRef(0)
   const { showModal } = useAuthModal()
+  const { showMenu } = useMobileMenu()
 
   const handleLogout = async () => {
     try {
@@ -34,11 +33,6 @@ export default function Header() {
     } catch (error) {
       console.error('Logout error:', error)
     }
-  }
-
-  const handleAuthClick = (mode: 'signin' | 'signup') => {
-    setAuthMode(mode)
-    showModal(mode)
   }
 
   // Handle click outside to close dropdown
@@ -76,6 +70,14 @@ export default function Header() {
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  const handleLogin = () => {
+    showModal('signin')
+  }
+
+  const handleSignUp = () => {
+    showModal('signup')
+  }
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 
@@ -213,7 +215,7 @@ export default function Header() {
               ) : (
                 <div className="flex items-center gap-3">
                   <button
-                    onClick={() => handleAuthClick('signin')}
+                    onClick={handleLogin}
                     className="px-4 py-2 text-gray-600 dark:text-gray-300 
                       border border-gray-300 dark:border-gray-600
                       rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 
@@ -222,7 +224,7 @@ export default function Header() {
                     Log In
                   </button>
                   <button
-                    onClick={() => handleAuthClick('signup')}
+                    onClick={handleSignUp}
                     className="px-4 py-2 bg-green-600 text-white rounded-lg 
                       hover:bg-green-700 transition-all duration-300 
                       transform hover:scale-105 hover:shadow-md
@@ -237,7 +239,7 @@ export default function Header() {
 
           {/* Mobile menu button */}
           <button
-            onClick={() => setShowMobileMenu(true)}
+            onClick={showMenu}
             className="md:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300
               hover:bg-gray-100 dark:hover:bg-gray-700"
           >
@@ -258,14 +260,6 @@ export default function Header() {
           </button>
         </div>
       </nav>
-
-      {/* Mobile menu */}
-      <MobileMenu 
-        isOpen={showMobileMenu}
-        onClose={() => setShowMobileMenu(false)}
-        userProfileEmoji={userProfileEmoji}
-        onAuthClick={handleAuthClick}
-      />
     </header>
   )
 }

@@ -10,6 +10,7 @@ import { AuthProvider } from './context/AuthContext'
 import { Toaster } from 'react-hot-toast'
 import { PlantProvider } from './context/PlantContext'
 import { AuthModalProvider } from './components/AuthModalProvider'
+import { MobileMenuProvider } from './components/MobileMenuProvider'
 
 // const lobster = Lobster({
 //   weight: '400',
@@ -35,43 +36,45 @@ export default function RootLayout({
             <PlantProvider>
               <GalleryProvider>
                 <AuthModalProvider>
-                  <Header />
-                  <main className="pt-16">
-                    {children}
-                  </main>
-                  <Toaster
-                    position="bottom-right"
-                    toastOptions={{
-                      success: {
+                  <MobileMenuProvider>
+                    <Header />
+                    <main className="pt-16">
+                      {children}
+                    </main>
+                    <Toaster
+                      position="bottom-right"
+                      toastOptions={{
+                        success: {
+                          style: {
+                            background: 'rgb(22 101 52)', // bg-green-800
+                            color: 'white',
+                            borderRadius: '0.5rem',
+                          },
+                          iconTheme: {
+                            primary: 'white',
+                            secondary: 'rgb(22 101 52)',
+                          },
+                        },
+                        error: {
+                          style: {
+                            background: 'rgb(185 28 28)', // bg-red-700
+                            color: 'white',
+                            borderRadius: '0.5rem',
+                          },
+                          iconTheme: {
+                            primary: 'white',
+                            secondary: 'rgb(185 28 28)',
+                          },
+                        },
+                        duration: 4000,
+                        className: 'dark:bg-gray-800 dark:text-white',
                         style: {
-                          background: 'rgb(22 101 52)', // bg-green-800
-                          color: 'white',
                           borderRadius: '0.5rem',
+                          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
                         },
-                        iconTheme: {
-                          primary: 'white',
-                          secondary: 'rgb(22 101 52)',
-                        },
-                      },
-                      error: {
-                        style: {
-                          background: 'rgb(185 28 28)', // bg-red-700
-                          color: 'white',
-                          borderRadius: '0.5rem',
-                        },
-                        iconTheme: {
-                          primary: 'white',
-                          secondary: 'rgb(185 28 28)',
-                        },
-                      },
-                      duration: 4000,
-                      className: 'dark:bg-gray-800 dark:text-white',
-                      style: {
-                        borderRadius: '0.5rem',
-                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-                      },
-                    }}
-                  />
+                      }}
+                    />
+                  </MobileMenuProvider>
                 </AuthModalProvider>
               </GalleryProvider>
             </PlantProvider>

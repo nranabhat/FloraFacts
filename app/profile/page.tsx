@@ -55,6 +55,18 @@ export default function Profile() {
     loadProfileEmoji()
   }, [user])
 
+  // Handle auth redirect
+  useEffect(() => {
+    if (!user) {
+      router.push('/')
+    }
+  }, [user, router])
+
+  // If user is null, return null to prevent flash of content
+  if (!user) {
+    return null
+  }
+
   // Add this helper function at the top of the file
   const handleError = (err: unknown, defaultMessage: string) => {
     // Log detailed error for developers
@@ -138,11 +150,6 @@ export default function Profile() {
       setIsDeleting(false)
       setShowDeleteConfirm(false)
     }
-  }
-
-  if (!user) {
-    router.push('/')
-    return null
   }
 
   return (

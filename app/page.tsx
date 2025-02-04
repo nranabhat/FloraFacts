@@ -5,8 +5,8 @@ import { Lobster } from 'next/font/google'
 import PlantIdentifier from './components/PlantIdentifier'
 import Footer from './components/Footer'
 import { useAuth } from './context/AuthContext'
-import { useState } from 'react'
 import { useAuthModal } from './components/AuthModalProvider'
+import { useRouter } from 'next/navigation'
 
 const lobster = Lobster({
   weight: '400',
@@ -14,13 +14,15 @@ const lobster = Lobster({
   display: 'swap',
 })
 
+
 export default function Home() {
   const { user } = useAuth()
   const { showModal } = useAuthModal()
+  const router = useRouter()
 
   const handleTitleClick = () => {
     // Reload the page
-    window.location.reload()
+    router.refresh()
   }
 
   const handleGetStarted = () => {
