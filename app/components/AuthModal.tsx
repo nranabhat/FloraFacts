@@ -13,6 +13,25 @@ interface AuthModalProps {
   initialMode?: 'signin' | 'signup' | 'reset'
 }
 
+// Add this type at the top of the file
+type AuthErrorCode = 
+  | 'auth/invalid-credential'
+  | 'auth/email-already-in-use'
+  | 'auth/invalid-email'
+  | 'auth/weak-password'
+  | 'auth/user-not-found'
+  | 'auth/wrong-password'
+
+// Separate error messages into a constant object
+const AUTH_ERROR_MESSAGES: Record<AuthErrorCode, string> = {
+  'auth/invalid-credential': 'Incorrect email or password. Please try again.',
+  'auth/email-already-in-use': 'This email is already registered. Please Log In instead.',
+  'auth/invalid-email': 'Please enter a valid email address.',
+  'auth/weak-password': 'Password should be at least 6 characters long.',
+  'auth/user-not-found': 'Incorrect email or password. Please try again.',
+  'auth/wrong-password': 'Incorrect email or password. Please try again.'
+}
+
 export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: AuthModalProps) {
   const [mode, setMode] = useState<'signin' | 'signup' | 'reset'>(initialMode)
   const [email, setEmail] = useState('')
@@ -45,20 +64,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
   if (!isOpen) return null
 
   const getErrorMessage = (error: FirebaseError) => {
-    switch (error.code) {
-      case 'auth/email-already-in-use':
-        return 'This email is already registered. Please Log In instead.'
-      case 'auth/invalid-email':
-        return 'Please enter a valid email address.'
-      case 'auth/weak-password':
-        return 'Password should be at least 6 characters long.'
-      case 'auth/user-not-found':
-        return 'No account found with this email. Please sign up.'
-      case 'auth/wrong-password':
-        return 'Incorrect password. Please try again or reset your password.'
-      default:
-        return 'An error occurred. Please try again.'
-    }
+    const code = error.code as AuthErrorCode
+    return AUTH_ERROR_MESSAGES[code] ?? 'An error occurred. Please try again.'
   }
 
   const checkEmailSignInMethods = async (email: string) => {
@@ -93,23 +100,29 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
     try {
       if (mode === 'signin' || mode === 'signup') {
         const isGoogleAccount = await checkEmailSignInMethods(email)
-        if (isGoogleAccount) {
-          return // Stop here if it's a Google account
-        }
+        if (isGoogleAccount) return
       }
 
-      if (mode === 'signin') {
-        await signInWithEmail(email, password)
-        onClose()
-      } else if (mode === 'signup') {
-        await signUpWithEmail(email, password)
-        onClose()
-      } else if (mode === 'reset') {
-        await resetPassword(email)
-        setResetSent(true)
+      switch (mode) {
+        case 'signin':
+          await signInWithEmail(email, password)
+          onClose()
+          break
+        case 'signup':
+          await signUpWithEmail(email, password)
+          onClose()
+          break
+        case 'reset':
+          await resetPassword(email)
+          setResetSent(true)
+          break
       }
     } catch (err) {
       if (err instanceof FirebaseError) {
+        // Only log the error code in development
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('Auth error:', err.code)
+        }
         setError(getErrorMessage(err))
         if (err.code === 'auth/email-already-in-use') {
           setMode('signin')
@@ -144,12 +157,20 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'signin' }: A
         </h2>
 
         {error && (
-          <div className="mb-4 p-2 bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded">
-            {error}
+          <div className="mb-4 p-3 bg-green-50/50 dark:bg-green-950/30 
+            rounded-lg border border-green-100 dark:border-green-900/50 backdrop-blur-sm">
+            <div className="flex items-center gap-2 text-green-800 dark:text-green-300/90 text-sm">
+              <svg className="w-5 h-5 opacity-70 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>{error}</span>
+            </div>
             {error.includes('Google account') && (
               <button
                 onClick={handleGoogleSignIn}
-                className="block w-full mt-2 text-sm text-green-600 hover:underline"
+                className="block w-full mt-3 text-sm text-green-700 dark:text-green-400 
+                  hover:text-green-800 dark:hover:text-green-300 transition-colors"
               >
                 Click here to Log In with Google
               </button>

@@ -19,6 +19,7 @@ import {
 import { auth } from '../lib/firebase'
 import { doc, deleteDoc, collection, getDocs, setDoc, getDoc } from 'firebase/firestore'
 import { db } from '../lib/firebase'
+import { FirebaseError } from 'firebase/app'
 
 interface AuthContextType {
   user: User | null
@@ -79,8 +80,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await signInWithPopup(auth, provider)
     } catch (error) {
-      console.error('Google Log In error:', error)
-      throw error
+      if (error instanceof FirebaseError) {
+        throw error
+      } else {
+        throw new Error('An unexpected error occurred during Google sign in')
+      }
     }
   }
 
@@ -88,8 +92,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await signInWithEmailAndPassword(auth, email, password)
     } catch (error) {
-      console.error('Email Log In error:', error)
-      throw error
+      if (error instanceof FirebaseError) {
+        console.debug('Auth error code:', error.code)
+        throw error
+      } else {
+        throw new Error('An unexpected error occurred during sign in')
+      }
     }
   }
 
@@ -97,8 +105,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await createUserWithEmailAndPassword(auth, email, password)
     } catch (error) {
-      console.error('Email sign up error:', error)
-      throw error
+      if (error instanceof FirebaseError) {
+        throw error
+      } else {
+        throw new Error('An unexpected error occurred during sign up')
+      }
     }
   }
 

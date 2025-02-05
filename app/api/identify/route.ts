@@ -83,9 +83,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ responseText })
   } catch (error) {
     console.error('Plant Identification Error:', error)
+    
+    // Check if it's the overloaded model error
+    const errorMessage = error instanceof Error ? error.message : 'Failed to identify plant'
+    const isOverloadedError = errorMessage.toLowerCase().includes('model is overloaded')
+    
     return NextResponse.json(
-      { error: 'Failed to identify plant' }, 
-      { status: 500 }
+      { 
+        error: isOverloadedError 
+          ? 'The model is overloaded. Please try again in a few moments.'
+          : 'Failed to identify plant' 
+      },
+      { status: isOverloadedError ? 503 : 500 }
     )
   }
 } 

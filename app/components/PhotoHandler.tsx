@@ -258,8 +258,10 @@ export default function PhotoHandler({ onImageCapture, currentImage }: PhotoHand
                 className="w-full h-full object-cover"
               />
               {cameraError && (
-                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                  <p className="text-white text-center px-4">{cameraError}</p>
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+                  <p className="text-white/90 text-center px-4 py-2 bg-black/50 rounded-lg backdrop-blur-sm">
+                    {cameraError}
+                  </p>
                 </div>
               )}
             </div>

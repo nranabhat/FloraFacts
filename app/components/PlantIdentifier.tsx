@@ -47,8 +47,13 @@ export default function PlantIdentifier() {
       const data = await response.json()
 
       if (!response.ok) {
-        toast.error(data.error || 'Failed to identify plant')
-        throw new Error(data.error || 'Failed to identify plant')
+        // Handle HTTP errors
+        if (response.status === 503) {
+          setError('The model is overloaded. Please try again later.')
+        } else {
+          setError('Rats! We couldn\'t find a plant in this image. Please try again.')
+        }
+        return
       }
 
       toast.success('Plant identified successfully!')
@@ -56,14 +61,9 @@ export default function PlantIdentifier() {
       const parsedInfo = parseJsonResponse(data.responseText)
       setCurrentPlant(base64Image, parsedInfo)
     } catch (err) {
-      console.error('Plant Identification Error:', err)
-      
-      const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred'
-      setError(
-        errorMessage === 'Rats! We couldn\'t find a plant in this image. Please try again.' 
-          ? errorMessage 
-          : 'Rats! We couldn\'t find a plant in this image. Please try again.'
-      )
+      // Safe error logging for client-side
+      console.error('Failed to identify plant:', err instanceof Error ? err.message : 'Unknown error')
+      setError('We couldn\'t find a plant in this image :( Please try again.')
     } finally {
       setIsLoading(false)
     }
@@ -183,8 +183,13 @@ export default function PlantIdentifier() {
         )}
 
         {error && (
-          <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
-            <div className="text-red-500 dark:text-red-400 text-base">
+          <div className="text-center p-4 bg-green-50/50 dark:bg-green-950/30 
+            rounded-lg border border-green-100 dark:border-green-900/50 backdrop-blur-sm">
+            <div className="text-green-800 dark:text-green-300/90 text-sm flex items-center justify-center gap-2">
+              <svg className="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} 
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
               {error}
             </div>
           </div>
