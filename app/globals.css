@@ -98,3 +98,21 @@ body {
 }
 
 /* Add any additional custom styles here */
+
+@layer utilities {
+  .animate-scroll {
+    animation: scroll 40s linear infinite;
+  }
+  
+  .animate-scroll:hover {
+    animation-play-state: paused;
+  }
+}
+
+/* Optional: Add this if you want to prevent any flickering during animation */
+@layer base {
+  * {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+}
