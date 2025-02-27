@@ -4,6 +4,7 @@ import { Lobster } from 'next/font/google'
 import { useAuthModal } from '../components/AuthModalProvider'
 import Image from 'next/image'
 import { useRef, useEffect, useState } from 'react'
+import { useSwipeable } from 'react-swipeable'
 
 const lobster = Lobster({
   weight: '400',
@@ -51,11 +52,25 @@ const REVIEWS = [
 
 export default function LandingPage() {
   const { showModal } = useAuthModal()
-  const [isPaused] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isMobile, setIsMobile] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
+  // Check if we're on mobile
   useEffect(() => {
-    if (!scrollRef.current || isPaused) return
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768) // 768px is typical mobile breakpoint
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Desktop scrolling animation
+  useEffect(() => {
+    if (!scrollRef.current || isPaused || isMobile) return
     
     let animationFrameId: number
     let scrollPosition = 0
@@ -77,7 +92,19 @@ export default function LandingPage() {
     return () => {
       cancelAnimationFrame(animationFrameId)
     }
-  }, [isPaused])
+  }, [isPaused, isMobile])
+
+  // Mobile swipe handlers
+  const handlers = useSwipeable({
+    onSwipedLeft: () => {
+      if (!isMobile) return
+      setCurrentIndex((prev) => (prev + 1) % REVIEWS.length)
+    },
+    onSwipedRight: () => {
+      if (!isMobile) return
+      setCurrentIndex((prev) => (prev - 1 + REVIEWS.length) % REVIEWS.length)
+    }
+  })
 
   const handleGetStarted = () => {
     showModal('signup')
@@ -276,82 +303,134 @@ export default function LandingPage() {
         <h2 className={`${lobster.className} text-4xl text-green-800 dark:text-green-500 text-center mb-12`}>
           What Our Users Say
         </h2>
-        <div 
-          className="relative w-full"
-          style={{
-            maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
-            WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)'
-          }}
-        >
-          <div 
-            className="flex gap-8 animate-scroll hover:[animation-play-state:paused]"
-          >
-            {/* First set of reviews */}
-            {REVIEWS.map((review, index) => (
+        {isMobile ? (
+          // Mobile swipeable reviews
+          <div {...handlers} className="touch-pan-y">
+            <div className="relative w-full max-w-sm mx-auto">
               <div 
-                key={`first-${index}`}
-                className="flex-shrink-0 w-full max-w-sm bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg
+                key={`mobile-${currentIndex}`}
+                className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg
                   border border-green-100 dark:border-green-900
-                  transform hover:-translate-y-1 transition-all duration-300"
+                  transform transition-all duration-300"
               >
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-12 h-12 flex items-center justify-center bg-green-50 dark:bg-green-900/30 
                     rounded-full text-2xl">
-                    {review.emoji}
+                    {REVIEWS[currentIndex].emoji}
                   </div>
                   <div>
                     <h3 className="font-semibold text-gray-800 dark:text-gray-200">
-                      {review.name}
+                      {REVIEWS[currentIndex].name}
                     </h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {review.role}
+                      {REVIEWS[currentIndex].role}
                     </p>
                   </div>
                 </div>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  {review.content}
+                  {REVIEWS[currentIndex].content}
                 </p>
                 <div className="flex text-yellow-400">
-                  {[...Array(review.rating)].map((_, i) => (
+                  {[...Array(REVIEWS[currentIndex].rating)].map((_, i) => (
                     <span key={i} role="img" aria-label="star">⭐</span>
                   ))}
                 </div>
               </div>
-            ))}
-            {/* Second set of reviews for seamless loop */}
-            {REVIEWS.map((review, index) => (
-              <div 
-                key={`second-${index}`}
-                className="flex-shrink-0 w-full max-w-sm bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg
-                  border border-green-100 dark:border-green-900
-                  transform hover:-translate-y-1 transition-all duration-300"
-              >
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 flex items-center justify-center bg-green-50 dark:bg-green-900/30 
-                    rounded-full text-2xl">
-                    {review.emoji}
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-800 dark:text-gray-200">
-                      {review.name}
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      {review.role}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-gray-600 dark:text-gray-400 mb-4">
-                  {review.content}
-                </p>
-                <div className="flex text-yellow-400">
-                  {[...Array(review.rating)].map((_, i) => (
-                    <span key={i} role="img" aria-label="star">⭐</span>
-                  ))}
-                </div>
+              
+              {/* Mobile pagination dots */}
+              <div className="flex justify-center gap-2 mt-4">
+                {REVIEWS.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      index === currentIndex 
+                        ? 'bg-green-600 w-4' 
+                        : 'bg-green-200'
+                    }`}
+                  />
+                ))}
               </div>
-            ))}
+            </div>
           </div>
-        </div>
+        ) : (
+          // Desktop scrolling reviews with CSS animation
+          <div 
+            className="relative w-full"
+            style={{
+              maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
+              WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)'
+            }}
+          >
+            <div 
+              className="flex gap-8 animate-scroll hover:[animation-play-state:paused]"
+            >
+              {/* First set of reviews */}
+              {REVIEWS.map((review, index) => (
+                <div 
+                  key={`first-${index}`}
+                  className="flex-shrink-0 w-full max-w-sm bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg
+                    border border-green-100 dark:border-green-900
+                    transform hover:-translate-y-1 transition-all duration-300"
+                >
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 flex items-center justify-center bg-green-50 dark:bg-green-900/30 
+                      rounded-full text-2xl">
+                      {review.emoji}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-800 dark:text-gray-200">
+                        {review.name}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {review.role}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    {review.content}
+                  </p>
+                  <div className="flex text-yellow-400">
+                    {[...Array(review.rating)].map((_, i) => (
+                      <span key={i} role="img" aria-label="star">⭐</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {/* Second set of reviews for seamless loop */}
+              {REVIEWS.map((review, index) => (
+                <div 
+                  key={`second-${index}`}
+                  className="flex-shrink-0 w-full max-w-sm bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg
+                    border border-green-100 dark:border-green-900
+                    transform hover:-translate-y-1 transition-all duration-300"
+                >
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="w-12 h-12 flex items-center justify-center bg-green-50 dark:bg-green-900/30 
+                      rounded-full text-2xl">
+                      {review.emoji}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-800 dark:text-gray-200">
+                        {review.name}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {review.role}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-400 mb-4">
+                    {review.content}
+                  </p>
+                  <div className="flex text-yellow-400">
+                    {[...Array(review.rating)].map((_, i) => (
+                      <span key={i} role="img" aria-label="star">⭐</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
       {/* How It Works Section */}
