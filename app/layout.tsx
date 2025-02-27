@@ -11,6 +11,7 @@ import { Toaster } from 'react-hot-toast'
 import { PlantProvider } from './context/PlantContext'
 import { AuthModalProvider } from './components/AuthModalProvider'
 import { MobileMenuProvider } from './components/MobileMenuProvider'
+import { Analytics } from '@vercel/analytics/react'
 
 // const lobster = Lobster({
 //   weight: '400',
@@ -30,6 +31,18 @@ export const metadata: Metadata = {
     apple: [
       { url: '/apple-touch-icon.png' },
     ],
+  },
+  openGraph: {
+    title: 'FloraFacts',
+    description: 'Identify plants using AI technology',
+    images: '/android-chrome-512x512.png',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'FloraFacts',
+    description: 'Identify plants using AI technology',
+    images: '/android-chrome-512x512.png',
   },
 }
 
@@ -86,6 +99,7 @@ export default function RootLayout({
                           },
                         }}
                       />
+                      <Analytics />
                     </div>
                   </MobileMenuProvider>
                 </AuthModalProvider>
