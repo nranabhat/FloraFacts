@@ -65,15 +65,15 @@ export default function MobileMenu({
       />
       
       {/* Menu */}
-      <div className="fixed right-0 top-0 bottom-0 w-4/5 max-w-sm bg-white dark:bg-gray-800 
+      <div className="fixed left-0 top-4 bottom-4 w-4/5 max-w-sm bg-white dark:bg-gray-800 
         shadow-2xl transition-transform duration-300 ease-in-out transform
-        border-l border-gray-200 dark:border-gray-700 overflow-y-auto
+        rounded-r-3xl border-r border-gray-200 dark:border-gray-700 overflow-y-auto
         flex flex-col"
       >
         {/* Header */}
         <div className="sticky top-0 bg-white dark:bg-gray-800 z-10 
           border-b border-gray-200 dark:border-gray-700 p-4
-          flex items-center justify-between"
+          flex items-center justify-between rounded-tr-3xl"
         >
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Menu</h2>
           <button
@@ -111,7 +111,7 @@ export default function MobileMenu({
           <Link
             href="/"
             onClick={onClose}
-            className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-colors ${
+            className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-colors font-bold ${
               pathname === '/' 
                 ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400' 
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
@@ -122,7 +122,7 @@ export default function MobileMenu({
           <Link
             href="/gallery"
             onClick={onClose}
-            className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-colors ${
+            className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-colors font-bold ${
               pathname === '/gallery'
                 ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400'
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
@@ -133,7 +133,7 @@ export default function MobileMenu({
           <Link
             href="/about"
             onClick={onClose}
-            className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-colors ${
+            className={`flex items-center gap-2 px-4 py-3 rounded-xl transition-colors font-bold ${
               pathname === '/about'
                 ? 'bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400'
                 : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
@@ -145,11 +145,11 @@ export default function MobileMenu({
           {/* Theme Toggle */}
           <button
             onClick={onThemeToggle}
-            className="flex items-center gap-2 w-full px-4 py-3 rounded-xl
+            className="flex items-center gap-2 w-full px-4 py-3 rounded-xl font-bold
               text-gray-600 dark:text-gray-300 
               hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
-            <span>{theme === 'light' ? '🌙 Dark Mode' : '☀️ Light Mode'}</span>
+            <span>{theme === 'light' ? '🌙' : '☀️'}</span>
           </button>
         </nav>
 
@@ -160,7 +160,7 @@ export default function MobileMenu({
               <button
                 onClick={onLogin}
                 className="w-full px-4 py-2.5 rounded-xl text-gray-600 dark:text-gray-300 
-                  border-2 border-gray-300 dark:border-gray-600
+                  border border-gray-300 dark:border-gray-600
                   hover:bg-gray-50 dark:hover:bg-gray-700 
                   transition-colors font-medium"
               >
